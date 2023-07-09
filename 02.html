@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./vue/js/vue.js"></script>
+</head>
+
+<body>
+    <!-- 1 -->
+    <div id="app-7">
+        <ol>
+            <todo-item v-for="item in groceryList" :todo="item" :key="item.id"></todo-item>
+        </ol>
+    </div>
+
+    <!-- 2 -->
+    <div id="app">
+        <p>{{ foo }}</p>
+        <!-- 这里的 `foo` 不会更新！ -->
+        <button v-on:click="foo = 'baz'">Change it</button>
+    </div>
+
+    <!-- 3 以下两个标签不能同时使用 -->
+    <!-- <p id="hh">Using mustaches: {{ rawHtml }}</p> -->
+    <p id="hh">Using v-html directive: <b v-html="rawHtml"></b></p>
+
+    <!-- 4 -->
+    <!-- 使用 v-html 的方式 -->
+    <p v-html="formattedText" id="app2"></p>
+
+    <!-- 5 -->
+    <template>
+        <div id="app3">
+            <custom-text :text="userInput" :keywords="keywords"></custom-text>
+        </div>
+    </template>
+
+    <script>
+        // 1
+        Vue.component('todo-item', {
+            props: ['todo'],
+            template: '<li>{{todo.text}}</li>'
+        })
+
+        const app7 = new Vue({
+            el: '#app-7',
+            data: {
+                groceryList: [
+                    { id: 0, text: "111" },
+                    { id: 1, text: "222" },
+                    { id: 2, text: "333" }
+                ]
+            }
+        })
+
+        // 2
+        var obj = {
+            foo: 'bar'
+        }
+
+        Object.freeze(obj)
+
+        new Vue({
+            el: '#app',
+            data: obj
+        })
+
+        // 3
+        const vm = new Vue({
+            el: '#hh',
+            data: {
+                rawHtml: '<span style="color: red;">This should be red</span>'
+            }
+        })
+
+        // 4
+        // 只是简单地将生成的HTML字符串插入到指定的元素中，不涉及到复杂的交互和组件化的需求。
+        // const vm2 = new Vue({
+        //     el: "#app2",
+        //     data: {
+        //         userInput: "This is a sample text with some keywords",
+        //         keywords: ["sample", "keywords"],
+        //     },
+        //     computed: {
+        //         formattedText() {
+        //             let text = this.userInput;
+        //             for (let keyword of this.keywords) {
+        //                 text = text.replace(keyword, `<span style="color: blue;">${keyword}</span>`);
+        //             }
+        //             return text;
+        //         },
+        //     },
+        // });
+
+        // 5
+        // 组件暂时看不懂
+        // 定义了一个名为custom-text的组件，该组件接受text和keywords作为属性，并使用computed属性formattedText来生成带有红色标记的文本。然后，我们在父组件中使用<custom-text>标签来调用这个组件，并传递相应的属性。
+        Vue.component('custom-text', {
+            props: ['text', 'keywords'],
+            computed: {
+                formattedText() {
+                    let formatted = this.text;
+                    for (let keyword of this.keywords) {
+                        formatted = formatted.replace(keyword, `<span style="color: green;">${keyword}</span>`);
+                    }
+                    return formatted;
+                },
+            },
+            template: '<p v-html="formattedText"></p>',
+        });
+
+        new Vue({
+            data: {
+                userInput: "This is a sample text with some keywords",
+                keywords: ["sample", "keywords"],
+            },
+        });
+    </script>
+
+</body>
+
+</html>

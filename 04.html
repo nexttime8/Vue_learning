@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script type="text/javascript" src="./vue/js/vue.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bootcdn.net/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
+</head>
+
+<body>
+    <div id="root">
+        <h2>显示格式化后的实现</h2>
+        <h3>现在时间：{{getFmtTime()}}</h3>
+    </div>
+    <script type="text/javascript">
+        new Vue({
+            el: '#root',
+            data: {
+                time: 1621561377603,
+            },
+            computed: {
+                fmtTime() {
+                    return dayjs(this.time).format('YYYY年 MM-DD HH:mm:ss A') // display
+                    // 总之YYYY是年份，MM、DD、HH、mm、ss分别是月日时分秒
+                }
+            },
+            methods: {
+                getFmtTime() {
+                    return dayjs(this.time).format('YYYY年 MM-DD HH:mm:ss A')
+                }
+            },
+
+        })
+    </script>
+</body>
+
+</html>

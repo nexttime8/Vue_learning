@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01</title>
+    <script type="text/javascript" src="./js/vue.js"></script>
+    <style>
+        .sad {
+            width: 120px;
+            height: 30px;
+            background-color: hotpink;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="root">
+        <h1>Hello,{{name}},{{address}}</h1>
+        <input type="text" v-model="school.name" v-show="b">
+        <br>
+        <input type="text" :value="school.name" :class="a">
+        <button @click="hide()">点我隐藏输入框</button>
+    </div>
+
+
+    <script type="text/javascript">
+        // 先调整
+        Vue.config.productionTip = false// 没用
+
+        // 再使用（x是vm）
+        const x = new Vue({
+            el: '#root',
+            data: {
+                name: 'Juminor',
+                address: 'NanChang',
+                school: {
+                    name: 'QiuHuimin'
+                },
+                a: 'sad',
+                b: true,
+                hide() {
+                    this.b = false;
+                }
+            }
+        })
+
+    </script>
+</body>
+
+</html>
