@@ -114,17 +114,17 @@
      }类似，修改对象里面的属性值，变量随之改变
    - 通过一个对象，代理对另一个对象中属性的读写操作
    - ```js
-     let obj = { x: 100 };
-     let obj2 = { y: 200 };
+     let obj = { x: 100 }
+     let obj2 = { y: 200 }
 
      Object.defineProperty(obj2, "x", {
        get() {
-         return obj.x;
+         return obj.x
        },
        set(value) {
-         obj.x = value;
+         obj.x = value
        },
-     });
+     })
      ```
 
      如果进行 obj2.x = 300，则 value 就是 300，就会将 obj 的 x 属性赋值为 300
@@ -539,10 +539,73 @@
 6. 生命周期=生命周期回调函数=生命周期函数=生命周期钩子
 7. 生命周期函数的名字不可更改，但是函数内容由我们自己定义
 8. 生命周期中的 this 指向 vm 或者组件实例对象
+9. 透明度渐渐实现
+   1. 引入 vue.min.js 文件`<script type="text/javascript" src="./vue/js/vue.min.js"></script>`
+      - 使用 script 标签的方式引入
+   2. 设置动态绑定的 opacity 样式<h1 id="opaci" :style="{opacity}">透明度渐减的效果</h1>
+      - 注意一：v-bind:style，赋值给 style 的是字符串的形式
+      - 注意二：里面写成对象的形式，opacity:opacity 简写为 opacity
+      - 注意三：opacity 后者为 data 中的 key
+   3. 在 mouted 中使用 setInterval 函数让 opacity 渐减，并在<=0 时恢复为 1
+      ```js
+      mounted() {
+                setInterval(() => {
+                    this.opacity -= 0.01
+                    if (this.opacity <= 0) {
+                        this.opacity = 1
+                    }
+                }, 10)
+            },
+      ```
 
 ### chapter two
 
 1. 理解生命周期解析图
 2. template 的作用；vm.$el()的影响；
    - 两种 template 的区别，替换？
-3.
+   - 一种是直接在 body 里面写完，挂载在一个标签上，里面写满
+   - 另一种里面为空，在 Vue 实例中写 template:''或者``
+     - template 里面注意里面只能有一个根节点，不能是 template
+     - 而且是将``或者''里面直接替换掉挂载的那个标签
+3. 顺序是-直接在 Vue 实例里面，和 data 同级
+   - beforeCreate()
+   - created()
+   - beforeMount()
+   - **mounted()**
+     - 开启定时器，消息订阅
+   - beforeUpdate()
+   - updated()
+   - **beforeDestroy()**
+     - 对数据的操作不会再触发更新
+     - 进入了 beforeDestroy 不会再回到 beforeUpdate 了
+   - destroyed()——React 没有这个
+     - 如果没有在销毁之前打开 Vue 开发者工具，直接看不到 vm
+     - 之前打开过，vm 还看得到
+4. 学会用 debugger
+5. 组件实例对象 = 微型 vm
+6. 自定义事件是什么？
+   - vm.$destory 销毁一个实例之后
+   - 会清理它与其它实例的连接，同时解绑全部指令和自定义事件监听器（原生事件监听还存在）
+7. 梳理
+   1. Vue 里的生命周期钩子之间共用属性
+      - 不同作用域，通过 this.xxx 实现
+   2. 控制透明度渐减的实现发现问题
+      1. 为什么只能帮顶外层的标签，绑定当前标签并改变透明度时，没有效果？
+         1. 有错误的效果
+            ```html
+            <!-- Vue实例挂载在h1上 -->
+            <h1 id="opaci" :style="{opacity}">透明度渐减的效果</h1>
+            <button @click="stop">带你我停止变化</button>
+            <button v-on:click="opacity = 1">透明度设置为1</button>
+            ```
+         2. 正确实现的效果
+            ```html
+            <div id="opaci">
+              <h1 :style="{opacity}">透明度渐减的效果</h1>
+              <button @click="stop">带你我停止变化</button>
+              <button v-on:click="opacity = 1">透明度设置为1</button>
+            </div>
+            ```
+      2. 理解 Vue 实例挂载到的就是模板或者组件定义的自定义元素
+         - 挂载的 DOM 元素实际上是 Vue 实例的根元素，该元素及其子元素将成为 Vue 实例所管理的视图。
+         - 但是只能根元素下的 dom 元素动态更新
