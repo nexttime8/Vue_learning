@@ -12,6 +12,6 @@
      - 运行时环境——不同浏览器及版本
      - pollyfix——补足浏览器缺陷
 4. 问：如何配置 Babel 讲 ES6 转换为 ES5？
-   答案：![Alt text](image-6.png)
-   内在考察：![Alt text](image-7.png)
-5. ![Alt text](image-8.png)
+   答案：![Alt text](./images/image-6.png)
+   内在考察：![Alt text](./images/image-7.png)
+5. ![Alt text](./images/image-8.png)
