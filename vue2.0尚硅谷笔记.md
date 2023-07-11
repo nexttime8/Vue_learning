@@ -324,6 +324,7 @@
 6. 应该在原数组的基础上过滤，保留并返回过滤后的新数组
    - 在 Vue 实例中添加一个数组，初始值为原数组
 7. //#region 和//#endregion 折叠中间区域
+   - 这只针对 html 代码
 8. 计算属性中的函数要有一个返回值
    - 计算属性依赖于 Vue 实例中的 keyWord
    - 计算属性本身就会在两个时候调用，初始以及改变时
@@ -409,7 +410,7 @@
 ## 过滤器
 
 1. filters 配置项，里面写函数，在插值表达式部分写 property | 过滤器名称
-   - filters:{过滤器名称(value){return }}
+   - vm 里面的配置项 filters，`filters:{过滤器名称(value){return }}`
    - 这个 value 就是这个 property
    - 可以过滤器名称(参数)传参数，property 总会默认传入，给这个传入的参数直接设定初始值，初始值就是没有参数传入的时候的返回值，传入了参数自然按照参数的格式
 2. 多个过滤器之间可以串联
@@ -420,8 +421,8 @@
    - `Vue.filter('过滤器名称'，function(value){return})`
    - 必须写在 Vue 实例创建之间写好
    - 全局过滤器是 filter，局部过滤器是 filters
-5. 组件是微型的 Vue 实例？
-6. 除了插值语法中使用，还可以在哪里使用？
+5. 组件是微型的 Vue 实例？✔
+6. 除了插值语法中使用，还可以在哪里使用？✔
    - 插值语法是文本节点内
    - 还可以在标签的 attribute 上使用，:x="property | 过滤器名称"
    - 只能是 v-bind，v-model 不能使用
@@ -500,7 +501,7 @@
    ```
    - 格式三：直接通过
    ```js
-   Vue.directives('指令名',
+   Vue.directive('指令名',
       bind(element,binding){},// 与元素绑定时操作
       inserted(element,binding){},// 元素插入页面时
       update(element,binding){}// 模板被重新解析时
@@ -877,7 +878,7 @@
 4.  vue-cli 项目结构
     - 直接在 vscode 下的 powershell 执行`vue create xxx`报错， PowerShell 的执行策略默认不允许运行脚本
       - 改成 cmd！
-      - ctrl+`快捷键开启 vscode 终端
+      - ctrl+`快捷键开启 vscode 终端，只在 vetur 插件 enable 的情况下有~
     - package.json 文件中配置`"scripts":{"serve":"vue-cli-service serve --open"}`，启动项目自动在浏览器打开
       - package.json 文件中说明了，我们执行`npm run serve`执行的其实是`npm run vue-cli-service serve`
       - 其他 bulid、lint 类似，built 是将项目构建成 html|css|js 文件，lint 是将代码进行语法检查
@@ -930,19 +931,20 @@
 2. props 配置
    1. 组件复用，动态传数据，组件接收外部传入的数据
    2. 不在 data 里面 return 直接指名需要动态传的数据
-   3. 直接指名需要动态传的数据，写在与 data 同级的 props 属性里面
+   3. 直接指名需要动态传的数据，写在与 data 同级的 props 属性里面【需要用的地方】
       1. 简单接收
-         - props:['数据 1','数据 2']
+         - `props:['数据 1','数据 2']`
          - 在标签的地方传入数据
       2. 对象接收，类型
-         - props:{'数据 1':String,'数据 2':Number}
+         - `props:{'数据 1':String,'数据 2':Number}`
       3. 对象对象接收，类型+默认值+必要性
-         - props:{'数据 1':{type:String,required:true},'数据 2':{type:Number,default:22}}
+         - `props:{'数据 1':{type:String,required:true},'数据 2':{type:Number,default:22}}`
    4. v-bind 掌握！
       - 动态绑定，:传入的值是""里面的 js 表达式的结果
-      - 直接传入的是字符串
-   5. props 优先于 data
-   6. props 是只读的，需要修改，则将 props 里面的数据复制到 data 中，this
+      - 直接传入的是字符串，数据可能出问题
+   5. 在标签里面，直接作为属性进行传递`:数据 1=""`【传过去的地方，这里的 data 传到 props 指定的地方】
+   6. props 优先于 data
+   7. props 是只读的，需要修改，则将 props 里面的数据复制到 data 中，this
 3. mixin 混入
    1. 两个组件共享同样的配置
    2. 局部混合
@@ -952,6 +954,66 @@
    4. 全局混合
       1. main.js 文件中，先引入，再`Vue.mixin(混合项`)
 4. 插件-增强 Vue
-   1. 插件的本质是对象{}，里面必须要有 install(){}，建议创建为 src/plugins.js
+   1. 插件的本质是对象{}，里面必须要有 install(Vue,options){}，建议创建为 src/plugins.js
+      - Vue 是第一个参数，后面的参数是插件使用者传递的数据
    2. 在 main.js 文件中，先引入`import plugins from './plugins'`，后使用 `Vue.use(plugins)`
-5. 回忆全局过滤器？全局自定义指令？
+   3. 插件里面可以写 全局过滤器、自定义全局指令、定义混入、给 Vue 原型上添加方法
+5. 回忆全局过滤器？全局自定义指令？——全忘了
+6. scoped 属性
+   1. 和样式有关系
+   2. 多个不同组件的样式，最终会汇总到一起，也就是会产生样式类名的冲突，后者覆盖前者
+      - 不是看使用的顺序，看的是引入的顺序
+   3. scoped，样式只属于当前组件
+      - App.vue 不使用这个 scoped
+      - App.vue 写样式，一帮都是多个组件公用的
+7. lang 属性
+   1. 样式指定样式语言，默认 css
+   2. lang="less"，需要安装 less-loader
+      - `npm i less less-loader`
+      - 直接安装 less-loader 会是最新版本，会对照 webpack 的最新版本
+      - 建议安装 7
+   3. 查看版本` npm view less-loader versions``npm view webpack versions `
+
+# Todo-list 案例
+
+1. 习惯组件化编码流程
+   1. 实现静态组件：抽取组件，使用组件实现静态页面效果
+      - 按照功能点划分，组件名称：语义化，一般是多 个单词组合，每个单词首字母大写
+      - 对于可复用的功能模块，建议拆分成组件
+   2. 展示动态数据
+      1. 数据的类型、名称是什么
+      2. 数据保存在那个组件中
+   3. 交互，从绑定事件监听开始
+2. 静态页面组件化尝试
+   1. 组件的 export default 里面不需要 name 具体命名，直接""
+   2. src 文件夹不能改名，但是可以直接删除，删除之后将其他文件夹命名为 src
+   3. 页面的整体样式放在那里？
+      - 放在 App.vue 文件中
+   4. 注意：很多个 item 用 v-for 写，而不是直接重复写多个
+      - 涉及 todos 要用数组的形式存储
+      - v-for = "todoObj in todos"，这个 todos 要和 data 里面的 property 名一致
+      - 设置 key，动态绑定为 todoObj.id
+3. 展示动态数据尝试
+   1. 要存一堆要做的事，用数组存多个事，每个要做的事用对象表示
+      - id,name,complete
+      - id 用字符串，title 是字符串，complete 是 boolean 值
+      - 数据写在 data 李米娜
+   2. ToDoMain 展示这一堆要做的事情，所以在 ToDoMain 里面写
+   3. ToDoMain 组件里面的数据如何传到 ToDoItem 里面？
+      1. 用 props
+   4. 通过 data 里面的 todos 里面的数据，控制勾选
+      1. 用 v-bind
+      2. 用 checked
+   5. 获取输入，回车添加到 ToDoMain 里面
+      1. 获取输入
+         1. 用 v-model 双向数据绑定，data 配置，初始为空
+         2. 借助事件对象，按下回车的这个事件，event.target.value
+            - 只有一个输入框，可以用这个
+      2. 把输入文本，包装成对象
+         1. id？
+            1. 服务器，数据库生成
+            2. 单机，uuid->nanoid，生成唯一字符串
+               - 安装`npm i nanoid`
+               - 分别暴露，用{}导入，是一个函数，直接 nanoid()调用就会返回
+                 - `import {nanoid} from 'nanoid'`
+         2. ToDoHeader 里面添加的数据，怎么放到 ToDoMain
