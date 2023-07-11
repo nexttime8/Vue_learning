@@ -810,7 +810,6 @@
        - 继续简写：`export defalut {name:xx,}` name 最好和外面的组件文件名保持一致
          - 也是要大写哦
 5. App.vue
-   - 快捷键，只需要输入<即可![Alt text](./images/image-8.png)
    - 汇总组件，
      1. script 标签中引入组件
         - `import Xx from './Xx'`
@@ -860,8 +859,6 @@
     - package.json 文件中配置`"scripts":{"serve":"vue-cli-service serve --open"}`，启动项目自动在浏览器打开
       - package.json 文件中说明了，我们执行`npm run serve`执行的其实是`npm run vue-cli-service serve`
       - 其他 bulid、lint 类似，built 是将项目构建成 html|css|js 文件，lint 是将代码进行语法检查
-    - main.js 文件![Alt text](./images/image-9.png)
-    -
 5.  启动 vue-cli 项目之后为什么只有本地能运行，显示 Network: unavailable
 
 - allowedHosts，设置想要允许访问 dev server 的主机名列表
