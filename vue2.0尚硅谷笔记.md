@@ -7,7 +7,7 @@
 5. element-ui
 6. vue3
 
-# 20230628
+# Vue 核心
 
 ## vue 简介
 
@@ -66,8 +66,6 @@
     2. 创建了 Vue 实例之后，点击靶标，之后就会有<Root>和 data
     3. root 代表的就是 Vue 实例，根，与 html 里面的无关
     4. 可以直接在里面更新并保存
-
-# 20230703
 
 ## vue 版本语法
 
@@ -524,7 +522,7 @@
 
 ## 生命周期
 
-### chapter one
+### 生命周期 chapter one
 
 1. 内联样式，动态绑定要:，一组组的样式要写成对象的格式，opacity:opacity 可以写成这样，两个 opacity 含义不同，前者是 css 属性名，后者是 Vue 实例的 property，但是因为重名，所以可以写成对象的简写形式，也就是只要一个 opacity
 2. window.onload(()=>{})这里面写的操作，就是页面加载完后自动执行的操作
@@ -558,7 +556,7 @@
             },
       ```
 
-### chapter two
+### 生命周期 chapter two
 
 1. 理解生命周期解析图
 2. template 的作用；vm.$el()的影响；
@@ -609,3 +607,289 @@
       2. 理解 Vue 实例挂载到的就是模板或者组件定义的自定义元素
          - 挂载的 DOM 元素实际上是 Vue 实例的根元素，该元素及其子元素将成为 Vue 实例所管理的视图。
          - 但是只能根元素下的 dom 元素动态更新
+      3. **尝试**发现 chrome 无法打开 Devtools？
+         - 报错：Devtools inspection is not available because it's in production mode or explicitly disabled by the author.
+         1. 在创建 Vue 应用程序时，确保将 process.env.NODE_ENV 设置为 development，而不是 production。这将使 Vue 应用程序以开发模式而不是生产模式运行
+         2. 确保在构建 Vue 应用程序时，没有设置 production 模式。这通常在构建脚本或配置文件中进行设置。
+            - 如果使用 Vue CLI 构建项目，检查 vue.config.js 或 webpack.config.js 中的配置选项，确保没有设置 mode 为 production。
+            - 如果使用其他构建工具或自定义配置，请查看相应的构建配置文件，确保没有设置 production 模式。
+         3. 经过尝试发现
+            - <script type="text/javascript" src="./vue/js/vue.min.js"></script>没有devtools
+            - <script src="./vue/js/vue.js"></script>有devtools
+            - 所以是因为 vue.min.js 是生产者模式的 js 文件，应该用 vue.js 开发者模式的 js 文件
+      4. 又发现正常引入之后，仍然没有显示 Vue devtols
+         - 解决：尝试关闭开发工具窗格，刷新页面并再次打开开发工具窗格。
+
+# Vue 组件化编程
+
+## 模块与组件、模块化与组件化
+
+1. 什么是组件？组件化变成和传统编程有什么优势？
+   1. 传统变成缺点：依赖关系混乱，不好维护；代码复用率不高
+      - 模块化解决 js 的混乱问题，一个模块就是一个 js 文件
+   2. 组件：css + html 片段+ js + [静态资源：字体、图片、mp4 等]
+      - 便于维护
+      - 复用
+   3. 组件听 vm 的，是实现应用中局部功能代码和资源的集合
+2. 模块化和组件化
+3. 组件两种形式
+   1. 非单文件组件
+      - 一个文件中多个组件
+   2. 单文件组件【大项目一般用这个】
+      - 一个文件中只包含一个组件
+
+## 非单文件组件创建与使用
+
+1. 组件创建【局部】
+   1. 组件名语义化
+   2. 创建组件
+      - 类似于 Vue 实例的创建
+      ```js
+      const school = Vue.extend({
+        el: "",
+        data: {},
+      })
+      ```
+      1. option "el" can only be used during instance creation with the `new` keyword.
+         - 只有 new Vue 中才写 el
+         - 组件不指定专门为谁服务
+      2. The "data" option should be a function that returns a per-instance value in component definitions.
+         - data 要写成函数，组件中要写成函数式
+         - 写成对象有引用关系，不是独立的而是同一个
+         - 函数式是独立的，新的对象
+         - data 必须写成普通函数
+      ```js
+      const a = Vue.extend({
+        data() {
+          return {}
+        },
+      })
+      ```
+   3. 注册组件【局部注册】
+      - 在 vm 中使用 components 对象注册，里面都是 k:v 的组合
+      - k 才是组件名，a 是`const a = Vue.extend({})`这里的变量名
+      - 推荐两个地方都写同样的名称， 直接就是组件名，k:v 简写成 k
+      ```js
+      new Vue({
+        el: "#root",
+        components: {
+          school: a,
+        },
+      })
+      ```
+   4. 使用组件
+      - 在`const a = Vue.extend({})`里面添加
+        ```js
+        template: `
+        <div>
+           <div>学校名称：{{schoolName}}</div>
+           <div>学校地址{{address}}</div>
+        <div/>
+        `
+        ```
+      - tips：template 里面只能有一个根元素
+      - 在 html 结构里面用组件名作为标签名创建标签
+        ```html
+        <school></school>
+        ```
+2. 创建局部组件**尝试**
+   - 报错：Unknown custom element: <shool> - did you register the component correctly? For recursive components, make sure to provide the "name" option.
+   - school 写错成 shool 了
+3. 创建的组件什么时候是双标签？什么时候是单标签？
+   - 这里创建的无论是局部组件还是全局组件都是双标签
+4. 之后所有要加到页面上的都直接加到组件上
+   - 样式结构直接加到 template 上，事件处理函数直接写到 methods 里面
+   - 先在 html 里面写，再写到 template 里面，否则只是``格式，没有代码补齐
+5. 全局注册？
+   - 不同 vm 之间的组件不能复用
+   - Vue.component('组件名称',组件在哪也就是变量)
+6. 创建全局组件**尝试**
+   - 写的都没问题，因为顺序导致报错：Unknown custom element: <hello> - did you register the component correctly? For recursive components, make sure to provide the "name" option.
+   - **全局组件的注册要写在 Vue 实例创建的前面**
+
+## 非单文件组件注意点
+
+1. 组件名多个单词组成的，如何命名
+   - 写在 components 里面的时候，应该用引号
+   - 第一种，用-连接，在 Vue devtools 里面`my-school`会呈现为`MySchool`
+   - 第二种，每个单词都首字母大写，也就是在 Vue devtools 中呈现的那样
+     - 这种需要在脚手架环境中用
+     - webpack 中用
+   - 组件名肯定不能是内置的 HTML 元素名
+2. 定义组件的时候如果变量 `const s = Vue.extend({})`里面用了 `name=''` 定义名称，那么标签名就必须和这个 name 一致，而不是 components 里面定义的组件名称
+3. 可以双标签的形式，也可以单标签的形式
+   - 但是单标签的形式需要在脚手架环境中用
+4. 单文件组件的时候根本不写 Vue.extend？
+5. 组件中的 data 需要写成函数式的，而且是普通函数
+
+## 非单文件组件的嵌套
+
+1. 组件里面定义 components，实现组建的嵌套
+   ```js
+   const school = Vue.extend({
+     name,
+     template: ``, // 同样student标签也应该写在这里面
+     data() {},
+     components: {
+       student, // student的定义需要在school前面
+     },
+   })
+   ```
+2. 容器什么都不写
+   - vm 绑定容器，直接在 vm 里面定义 template
+
+## 非单文件组件总结
+
+1. 组件就是构造函数？
+   - 名为 VueComponent，Vue.extend 生成的
+   - 为什么会自动调用？
+     - 执行创建标签，Vue 解析的时候，就会创建组件的实例对象
+     - 也就是通过 new VueComponent(options)创建
+2. 每次调用 Vue.extend，返回的都是全新的 VueComponent
+   - 判断两个组件是否相同
+   - school === hello
+   - shool.a = 99 判断 hello.a
+3. this 指向
+   1. 组件配置中
+      - data 函数，methods 中的函数，watch 中的函数，computed 中的函数
+      - 均指向 VueComponent 实例对象
+   2. Vue 实例对象配置中-简称 vc
+      - data 函数，methods 中的函数，watch 中的函数，computed 中的函数
+      - 均指向 Vue 实例对象
+4. 如何体现 vm 管理 vc？
+   - vm 有$children 项，都是 VueComponent 实例对象
+5. vm 和 vc？
+   - 组件是可复用的 Vue 实例
+   - el 是 vm 所特有的
+6. 内置关系
+   1. 构造函数.prototype（显式原型属性），`构造函数的实例对象.__proto__`（隐式原型属性）
+      - 都指向原型对象，程序员从前者放东西，程序本身从后者获取东西
+   2. 组件和 Vue 的内置关系
+      - `VueComponent.prototype.__proto__ === Vue.prototype`
+      - VueComponent 并不是直接就有的，Vue.extend 返回的就是 VueComponent 构造函数
+   3. Vue 和 VueComponent 的关系
+      1. vm 自身是没有$watch 的，顺着原型链找就有
+   4. 实例的原型属性，永远指向自己缔造者的原型对象？
+      1. `vm.__proto__ = Vue.prototype.__proto__ = Object.prototype` ✔
+      2. `vm.__proto__.__proto__ = Object.prototype`❓
+      3. `vc.__proto__ = VueComponent.prototype.__proto__ = Vue.protoype = Object`
+         - 目的是让 vc 可以访问 Vue.prototype 上的属性方法
+      4. `vc.__proto__.__proto__ = VueComponent.prototype.__proto__-.__proto__ = Vue.protoype.__proto__ = Object.prototype`
+7. console.dir()是什么？
+
+## 单文件组件
+
+1. .vue 文件格式
+   - 浏览器无法运行
+     1. webpack
+     2. vue-cli 脚手架
+   - 命名-开发者工具
+     1. 单词
+        - 推荐首字母大写
+     2. 多词
+        - 推荐首字母大写
+        - 可以短线连接小写
+2. .vue 文件结构
+   1. template 标签|组件结构
+   2. script 标签|组件交互-数据、方法（computed、methods、watch）
+   3. style 标签|组件样式
+3. vscode 不认可.vue 文件格式，需要安装插件
+   - Vetur 或者 Vue Language Features
+   - 出现高亮等
+4. 非单文件组件改单文件组件|单文件组件创建
+   - 直接把去除 template 的 VueComponent 粘贴到 script 中
+   - template 部分放到 template 标签中
+   - 考虑到要用 import 引入，所以要将组件暴露
+     - ES6 模块化！
+       1. 分别暴露：`export const xx = Vue.extend({})`
+       2. 统一暴露：`export {xx}`
+       3. 默认暴露：`const xx = Vue.extend({}) 下一行 export default xx`
+       - 暴露一个，往往用默认暴露，只要 `import xx fomr xxx`
+       - 其他的都要 `import {xx} from xxx`
+       - 直接写成： `export default Vue.extend({})`
+       - 继续简写：`export defalut {name:xx,}` name 最好和外面的组件文件名保持一致
+         - 也是要大写哦
+5. App.vue
+   - 快捷键，只需要输入<即可![Alt text](./images/image-8.png)
+   - 汇总组件，
+     1. script 标签中引入组件
+        - `import Xx from './Xx'`
+     2. 在 export default{components:{}}里面注册组件
+        - `components:{Xx}`
+     3. 在 template 标签中使用
+        - template 里面必须要有根标签！
+        - <template><div id='root'>xxx</div></template>
+6. 组件听 vm 的，如何创建 vm？.vue 文件是组件，vm 必然不写在这里面
+   - 脚手架开发创建 vm 写在 main.js 文件中
+     - 入口文件，其他框架可能命名为 index.js 或 app.js
+     - main.js 直接和 App.vue 这个汇总组件对话
+       - 在 main.js 中引入
+         - `import App from './App.vue'`
+           - **浏览器中不能直接解析，需要放在脚手架中**
+         - vue 后缀可有可无
+     - vm 实例内容
+       ```js
+       new Vue({
+         el: "#root",
+         components: { App },
+       })
+       ```
+   - el: "#root"还要容器，创建 index.html 文件
+     - html 中先写好"#root"对应的容器
+       - 在里面写<App></App>标签
+       - 或者在 main.js 的 vm 中写 template:`<App></App`
+     - main.js 之前需要引入 vue.js
+     - 再引入 main.js 文件
+       - 因为先加载模板
+
+# 使用 Vue 脚手架
+
+## 初始化 Vue 脚手架
+
+1.  脚手架建议选择最新版本，不要 Vue 高版本+Vue 脚手架低版本
+2.  Vue CLI——command line interface
+3.  安装
+    1. 配置 npm 淘宝镜像`npm config set registry https://registry.npm.taobao.org`或者 cnpm`npm install -g cnpm --registry=https://registry.npm.taobao.org`
+    2. （全局安装）`npm install -g @vue/cli`
+    3. 切换到对应目录创建项目`vue create xxx`
+    4. 启动项目`npm run serve`
+4.  vue-cli 项目结构
+    - 直接在 vscode 下的 powershell 执行`vue create xxx`报错， PowerShell 的执行策略默认不允许运行脚本
+      - 改成 cmd！
+      - ctrl+`快捷键开启 vscode 终端
+    - package.json 文件中配置`"scripts":{"serve":"vue-cli-service serve --open"}`，启动项目自动在浏览器打开
+      - package.json 文件中说明了，我们执行`npm run serve`执行的其实是`npm run vue-cli-service serve`
+      - 其他 bulid、lint 类似，built 是将项目构建成 html|css|js 文件，lint 是将代码进行语法检查
+    - main.js 文件![Alt text](./images/image-9.png)
+    -
+5.  启动 vue-cli 项目之后为什么只有本地能运行，显示 Network: unavailable
+
+- allowedHosts，设置想要允许访问 dev server 的主机名列表
+  ```js
+  devServer: {
+  host: "0.0.0.0",
+  port: 8080, // 你想要的端口
+  allowedHosts: [
+  "host.docker.internal", // for docker
+  "localhost",
+  // 如果你想要其他主机名可以访问，你可以添加到这个列表
+  ],
+  },
+  ```
+- 本机 ip 地址通过 cmd 输入 ipconfig 查看，ipv4 后面的就是本机 ip 地址
+- 并没有解决问题，`仍然是Network: unavailable`
+
+6. 引入 public 文件夹下的文件，不用./，用`<%=BASE_URL_%>`
+7. title 标签中，以 package.json 文件中的项目名称为标题
+   - webpack 中的插件——看 webpack 视频
+   - <title><%= htmlWebpackPlugin.options.title %></title>
+8. noscript 标签？
+   - 浏览器不支持 js 的时候显示
+   - 可以设置为不支持
+9. vm 中的 render 配置项？
+   1. render
+      - `render(createElement){return createElement('h1','h1标签中的内容')}`
+      - 不用 this，写成箭头函数`render:h=>h(App)`
+   2. 引入完整版 vue 而不是运行时 vue
+      - vue.runtime.esm.js，没有 template complier
+      - `import Vue from 'vue/dist/vue'`

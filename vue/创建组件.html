@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./vue/js/vue.js"></script>
+</head>
+
+<body>
+    <div id="info2">
+        <hello></hello>
+    </div>
+
+    <div id="info">
+        <h1>{{msg}}</h1>
+        <hello></hello>
+        <h1>学校信息</h1>
+        <school></school>
+        <h1>学生信息</h1>
+        <student></student>
+    </div>
+
+    <script text="text/javascript">
+        Vue.config.productionTip = false
+        const school = Vue.extend({
+            template: `
+            <div>
+                <h2>学校名称：{{schoolName}}</h2>
+                <h2>学校地址{{address}}</h2>
+            </div>
+            `,
+            data() {
+                return {
+                    schoolName: "NanChang University",
+                    address: "学府大道999号",
+                }
+            }
+        })
+        const hello = Vue.extend({
+            template: `
+            <div>
+                <h2>{{message}},{{name}}</h2>
+            </div>
+            `,
+            data() {
+                return {
+                    message: "Hello",
+                    name: "Juminor",
+                }
+            }
+        })
+        const student = Vue.extend({
+            template: `
+            <div>
+                <h2>学生姓名：{{studentName}}</h2>
+                <h2>学生年龄：{{age}}</h2>
+            </div>
+            `,
+            data() {
+                return {
+                    studentName: "Juminor",
+                    age: 23,
+                }
+            }
+        })
+
+        Vue.component('hello', hello)
+
+        const vm = new Vue({
+            el: '#info',
+            data: {
+                msg: '信息'
+            },
+            components: {
+                school,
+                student,
+            }
+        })
+
+        new Vue({
+            el: '#info2',
+        })
+
+    </script>
+</body>
+
+</html>
