@@ -483,12 +483,34 @@
 
 1. Vue 实例中，和 data 同级的 directives 对象，里面是指令名
    - 格式一：key 和 value 对的形式，`指令名:{k1:v1,k2:v2}`，可以处理细节问题
-   - 格式二：直接写成函数指令名:function(){}，简写为指令名(){}
+   ```js
+   new Vue(
+      directives:{
+         '指令名':{k1:v1,k2:v2}
+      }
+   )
+   ```
+   - 格式二：直接写成函数指令名:function(){}，简写为`指令名(element,binding){}`
+   ```js
+   new Vue(
+      directives:{
+         '指令名'(element,binding){}
+      }
+   )
+   ```
+   - 格式三：直接通过
+   ```js
+   Vue.directives('指令名',
+      bind(element,binding){},// 与元素绑定时操作
+      inserted(element,binding){},// 元素插入页面时
+      update(element,binding){}// 模板被重新解析时
+   )
+   ```
 2. 函数形式，传入参数，第一个 element 是真实 dom，第二个 binding 是对象`{expression,value,name,rawName}`
-   - element 是指令所在的标签
-   - expression 是赋值给指令的 data 里面的 property
-   - value 是赋值给指令的 data 里面 property 的 property 值
-   - name 是指定的指令名，rawName 是使用时要写的指令名
+   - expression 是赋值给指令的 data 里面的 property 名
+   - value 是赋值给指令的 data 里面 property 值
+   - name 是指定的指令名
+   - rawName 是使用时要写的指令名
 3. 自定义指令（写成函数时）什么时候被调用？
    1. 指令与元素建立联系时/绑定时
    2. 指令所在的模板被重新解析时，哪怕指令内用到的数据没有被修改
@@ -888,5 +910,48 @@
       - `render(createElement){return createElement('h1','h1标签中的内容')}`
       - 不用 this，写成箭头函数`render:h=>h(App)`
    2. 引入完整版 vue 而不是运行时 vue
-      - vue.runtime.esm.js，没有 template complier
+      - vue.runtime.esm.js，没有 template complier，无法解析 vm 中的 template 属性
       - `import Vue from 'vue/dist/vue'`
+      - vue 文件中的 template 标签，package.json 文件中有指定用于解析的库
+   3. vue.runtime.esm.js 文件用到了 export 语法，浏览器不认识，用 vue.runtime.js，在浏览器运行精简版的 vue
+10. vue 所有的 webpack 配置文件都不可见
+
+- `vue inspect > output.js`查看
+- 必须进入到项目里面
+- webpack 基于 node.js，node 采用 common.js 的模块化
+- 在 vue.config.js 文件中修改配置
+
+## 补充
+
+1. ref 属性
+   1. 在 dom 元素上设置属性 ref，`ref="标记"`，如果是在子组件上加获取到的就是组件实例对象
+   2. 通过`this.$refs.标记`获取
+   3. 获取到的就是 dom 元素
+2. props 配置
+   1. 组件复用，动态传数据，组件接收外部传入的数据
+   2. 不在 data 里面 return 直接指名需要动态传的数据
+   3. 直接指名需要动态传的数据，写在与 data 同级的 props 属性里面
+      1. 简单接收
+         - props:['数据 1','数据 2']
+         - 在标签的地方传入数据
+      2. 对象接收，类型
+         - props:{'数据 1':String,'数据 2':Number}
+      3. 对象对象接收，类型+默认值+必要性
+         - props:{'数据 1':{type:String,required:true},'数据 2':{type:Number,default:22}}
+   4. v-bind 掌握！
+      - 动态绑定，:传入的值是""里面的 js 表达式的结果
+      - 直接传入的是字符串
+   5. props 优先于 data
+   6. props 是只读的，需要修改，则将 props 里面的数据复制到 data 中，this
+3. mixin 混入
+   1. 两个组件共享同样的配置
+   2. 局部混合
+      1. 在 main.js 文件中定义，就是复用配置，data、methods、mounted 等等都可以
+      2. .vue 文件组件里面的配置项，先引入，再配置 `mixins:[混合项]`
+   3. mixin 的数据优先级不如原本的，但是 mixin 里面的生命周期钩子优先级高于原本的
+   4. 全局混合
+      1. main.js 文件中，先引入，再`Vue.mixin(混合项`)
+4. 插件-增强 Vue
+   1. 插件的本质是对象{}，里面必须要有 install(){}，建议创建为 src/plugins.js
+   2. 在 main.js 文件中，先引入`import plugins from './plugins'`，后使用 `Vue.use(plugins)`
+5. 回忆全局过滤器？全局自定义指令？
