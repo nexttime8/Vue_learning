@@ -1099,6 +1099,10 @@
 9. （这下面都是自己做的）底部计数完成个数和总数
    1. computed 中的属性必须写成函数的形式，而且如果要使用 this，只能是普通函数不能是箭头函数
    2. 直接用计算属性，设置 done 和 all，直接根据 todos 来更新，只需要传递 todos，不需要传递 deleteToDo
+   3. SGG：done 可以用 filter 函数也可以用 reduce 函数实现
+   4. 数组有哪些方法
+      - forEach filter reduce slice splice unshift shift reverse
+      - concat every fill find copyWithin entries findIndex findLastIndex flat flatMap group groupToMap cludes indexOf lastIndexOf join keys map pop push reduceRight some sort toLocaleString toReversed tosorted toSpliced toString values with
 10. 全选按钮
     1. 根据前面的计算属性 done 和 all 实现，其他开关来控制总的开关，写在函数里面，要()调用获取返回值
     2. 通过监听 change 事件，来控制其他开关
@@ -1117,3 +1121,55 @@
        - 添加逻辑，统计已完成个数，为 0 则 alert 并 return
        - 而且是在最前面实现
 12. 全选按钮待完善
+13. 继续完善
+    1. all 为 0，footer 直接不展示整个模块，直接通过 v-show 即可绑定，因为 all 为 0 理解为 false，其余 1-n 理解为 true
+    2. 应该把全选和取消全选写在 App.vue 中，因为所有对 todos 的操作都应该如此
+       - othersChange 函数应该重写?
+    3. ！！！`:checked="changeAll()" @change="othersChange"`
+       - 这两个可以合并
+       - v-model 双向绑定，v-model="isAll"，isAll 是一个计算属性，不能简写
+       - 要写 get 和 set
+       - 理解为什么将两个合并
+
+# Todo-list 案例总结
+
+1. 组件化编码流程：
+   1. 拆分静态组件：组件要按照功能点拆分，命名不要与 html 元素冲突。
+   2. 实现动态组件：考虑好数据的存放位置，数据是一个组件在用，还是一些组件在用
+      - 用：get、set
+      1. 一个组件在用：放在组件自身即可。
+      2. 一些组件在用：放在他们共同的父组件上（_状态提升_）。
+         - header 用到了 main 的 item，向里面插入
+   3. 实现交互：从绑定事件开始。
+2. props 适用于：
+   1. 父组件==>子组件通信
+   2. 子组件==>父组件通信（要求父先给子一个函数）
+3. 使用 v-model 时要切记：v-model 绑定的值不能是 props 传过来的值，因为 props
+   是不可以修改的！
+4. props 传过来的若是对象类型的值，修改对象中的属性时 Vue 不会报错，但不推
+   荐这样做。
+
+# 浏览器本地存储-原生 js 不需要 vue
+
+1. localStorage
+   1. key、value 键值对，都必须是字符串
+      - 只要不是都会自动调用 toString 方法
+   2. `localStorage.setItem(字符串，字符串)`、`localStorage.getItem(字符串)`、`localStorage.removeItem(字符串)`、`localStorage.clear(不要参数)`
+      - `window.localStorage`
+      - set 键名存在，则更新其对应的值。
+   3. 本地存储对对象怎么处理？
+      - 存的时候`JSON.stringify()` 将对象转换成字符串的形式，而且认得出
+      - 读的时候`JSON.parse()`
+   4. 读一个不存在的是 null
+   5. JS0N.parse(null)的结果依然是 nul。
+   6. 关闭浏览器不会消失数据
+   7. 用户主动清空缓存数据会消失
+2. sessionStorage
+   1. 方法都和 localStorage 一样
+   2. 会话？浏览器关了就没了
+3. 以上两个统称 webStorage
+   - 存储内容大小一般支 5MB 左右（不同浏览器可能还不一样）
+
+# ToDoList 案例改成本地存储
+
+1. 

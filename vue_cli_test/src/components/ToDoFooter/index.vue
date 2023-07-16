@@ -1,7 +1,7 @@
 <template>
-  <div class="todo-footer">
+  <div class="todo-footer" v-show="all">
         <label>
-          <input type="checkbox" :checked="changeAll()" @change="othersChange"/>
+          <input type="checkbox" v-model="isAll"/>
         </label>
         <span>
           <span>已完成{{ done }}</span> / 全部{{ all }}
@@ -13,35 +13,32 @@
 <script>
     export default {
         name:"",
-        props:['todos','deleteToDo'],
+        props:['todos','deleteToDo','checkAllToDo'],
         computed:{
-            done:function(){
-                return this.todos.filter((todo)=>todo.complete).length
+            done(){
+                // return this.todos.filter((todo)=>todo.complete).length
+                return this.todos.reduce((pre,cur)=>pre+(cur.complete?1:0),0)
             },
-            all:function(){
+            all(){// 也可以直接插值语法写{{todos.length}}
                 return this.todos.length
             },
-            
+            isAll:{
+                get(){
+                    return this.done === this.all && this.all > 0
+                },
+                set(value){
+                    this.checkAllToDo(value)
+                }
+            }
         },
         methods:{
-            changeAll:function(){
-                if(this.done === this.all){
-                    return true
-                }else{
-                    return false
-                }
-            },
-            othersChange:function(e){
-                if(this.todos.length===0){
-                    e.target.checked = false
-                    return
-                }
-                if(e.target.checked === true){
-                    this.todos.forEach((todo)=>todo.complete=true)
-                } else {
-                    this.todos.forEach((todo)=>todo.complete=false)
-                }
-            },
+            // changeAll:function(){ // 可以直接写成计算函数，可以通过其他计算函数计算得到
+            //     if(this.done === this.all){
+            //         return true
+            //     }else{
+            //         return false
+            //     }
+            // },
             deleteDone:function(){
                 // this.todos = this.todos.filter((todo)=>!todo.complete)
                 if(this.todos.filter((todo)=>todo.complete).length===0){

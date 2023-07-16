@@ -11,6 +11,7 @@
             <ToDoFooter
                 :todos="todos" 
                 :deleteToDo="deleteToDo"
+                :checkAllToDo="checkAllToDo"
             />
         </div>
     </div>
@@ -50,6 +51,9 @@ export default {
         },
         deleteToDo(id){
             this.todos = this.todos.filter(todo=>todo.id!==id)
+        },
+        checkAllToDo(check){
+            this.todos.forEach((todo)=>todo.complete=check)
         }
     }
 }
