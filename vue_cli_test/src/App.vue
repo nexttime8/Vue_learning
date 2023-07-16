@@ -1,10 +1,17 @@
 <template>
-    <div id="root">
+    <div>
         <div class="todo-container">
         <div class="todo-wrap">
-            <ToDoHeader/>
-            <ToDoMain/>
-            <ToDoFooter/>
+            <ToDoHeader :addToDo="receive"/>
+            <ToDoMain 
+                :todos="todos" 
+                :checkToggle="checkToggle"
+                :deleteToDo="deleteToDo"
+            />
+            <ToDoFooter
+                :todos="todos" 
+                :deleteToDo="deleteToDo"
+            />
         </div>
     </div>
     </div>
@@ -16,13 +23,35 @@ import ToDoFooter from './components/ToDoFooter'
 import ToDoMain from './components/ToDoMain'
 
 export default {
-    el:'#root',
+    // [Vue warn]: option "el" can only be used during instance creation with the `new` keyword.
     name:"ToDo-List",
     components:{
         ToDoHeader,
         ToDoFooter,
         ToDoMain,
     },
+    data(){
+        return {
+            todos:[
+                {id:'001',thing:'学习VueSGG',complete:true},
+                {id:'002',thing:'学习ES6',complete:false},
+                {id:'003',thing:'学习尚品汇',complete:false},
+            ]
+        }
+    },
+    methods:{
+        receive(data){
+            this.todos.unshift(data)
+        },
+        checkToggle(id){
+            this.todos.forEach((todo)=>{
+                if(todo.id === id) todo.complete = !todo.complete                                
+            })
+        },
+        deleteToDo(id){
+            this.todos = this.todos.filter(todo=>todo.id!==id)
+        }
+    }
 }
 
 </script>

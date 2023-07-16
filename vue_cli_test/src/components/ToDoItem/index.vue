@@ -2,10 +2,14 @@
     <div>
         <li>
             <label>
-              <input type="checkbox" :checked="todo.complete"/>
+              <input type="checkbox" :checked="todo.complete" @change="checkToDo(todo.id)"/>
+              <!-- 可以实现控制complete值 -->
+              <!-- <input type="checkbox" :checked="todo.complete"/> -->
               <span>{{ todo.thing }}</span>
             </label>
-            <button class="btn btn-danger" style="display:none">删除</button>
+            <button class="btn btn-danger" @click="handleDelete(todo.id)">删除</button>
+            <!-- 不要行内样式，通过css控制显示 -->
+            <!-- <button class="btn btn-danger" style="display:none">删除</button> -->
           </li>
     </div>
 </template>
@@ -13,7 +17,17 @@
 <script>
     export default {
         name:"",
-        props:['todo']
+        props:['todo','checkToggle','deleteToDo'],
+        methods:{
+            checkToDo(id){
+                this.checkToggle(id) // 只会在组件实例上
+            },
+            handleDelete(id){
+                if(confirm('确定要删除吗？')){
+                    this.deleteToDo(id)
+                }
+            }
+        }
     }
 </script>
 
@@ -50,6 +64,14 @@
 
     li:last-child {
         border-bottom: none;
+    }
+
+    li:hover {
+        background-color:#e4dfdf;
+    }
+
+    li:hover button {
+        display: block;
     }
 
 </style>

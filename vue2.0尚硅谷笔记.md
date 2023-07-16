@@ -875,14 +875,25 @@
     2. （全局安装）`npm install -g @vue/cli`
     3. 切换到对应目录创建项目`vue create xxx`
     4. 启动项目`npm run serve`
-4.  vue-cli 项目结构
+4.  cnpm 安装问题
+
+    1.  //注册模块镜像
+        npm set registry https://registry.npm.taobao.org
+    2.  // node-gyp 编译依赖的 node 源码镜像  
+         npm set disturl https://npm.taobao.org/dist
+    3.  // 清空缓存  
+         npm cache clean --force
+    4.  // 安装 cnpm  
+         npm install -g cnpm --registry=https://registry.npm.taobao.org
+
+5.  vue-cli 项目结构
     - 直接在 vscode 下的 powershell 执行`vue create xxx`报错， PowerShell 的执行策略默认不允许运行脚本
       - 改成 cmd！
       - ctrl+`快捷键开启 vscode 终端，只在 vetur 插件 enable 的情况下有~
     - package.json 文件中配置`"scripts":{"serve":"vue-cli-service serve --open"}`，启动项目自动在浏览器打开
       - package.json 文件中说明了，我们执行`npm run serve`执行的其实是`npm run vue-cli-service serve`
       - 其他 bulid、lint 类似，built 是将项目构建成 html|css|js 文件，lint 是将代码进行语法检查
-5.  启动 vue-cli 项目之后为什么只有本地能运行，显示 Network: unavailable
+6.  启动 vue-cli 项目之后为什么只有本地能运行，显示 Network: unavailable
 
 - allowedHosts，设置想要允许访问 dev server 的主机名列表
   ```js
@@ -997,23 +1008,112 @@
    1. 要存一堆要做的事，用数组存多个事，每个要做的事用对象表示
       - id,name,complete
       - id 用字符串，title 是字符串，complete 是 boolean 值
-      - 数据写在 data 李米娜
+      - 数据写在 data 里面
    2. ToDoMain 展示这一堆要做的事情，所以在 ToDoMain 里面写
    3. ToDoMain 组件里面的数据如何传到 ToDoItem 里面？
       1. 用 props
    4. 通过 data 里面的 todos 里面的数据，控制勾选
       1. 用 v-bind
       2. 用 checked
-   5. 获取输入，回车添加到 ToDoMain 里面
-      1. 获取输入
+   5. ToDoHeader 中获取输入，回车添加到 ToDoMain 里面
+      1. 获取输入 TodoHeader 的 input 框
          1. 用 v-model 双向数据绑定，data 配置，初始为空
-         2. 借助事件对象，按下回车的这个事件，event.target.value
+         2. 绑定事件@keyup.enter="add"
+         3. 借助事件对象，按下回车的这个事件，event.target.value
             - 只有一个输入框，可以用这个
-      2. 把输入文本，包装成对象
-         1. id？
+      2. add 事件处理，把输入文本，包装成对象
+         1. 不能只是文本，需要有 id、thing、complete
+         2. id？
             1. 服务器，数据库生成
             2. 单机，uuid->nanoid，生成唯一字符串
                - 安装`npm i nanoid`
-               - 分别暴露，用{}导入，是一个函数，直接 nanoid()调用就会返回
-                 - `import {nanoid} from 'nanoid'`
-         2. ToDoHeader 里面添加的数据，怎么放到 ToDoMain
+               - 分别暴露，用{}导入，是一个函数，直接 nanoid()调用就会返回，要用的是其返回值！
+                 - 在 script 里面引入`import {nanoid} from 'nanoid'`
+         3. 最终包装成
+            - `{id:nanoid,thing:e.target.value,complete:false}`
+      3. ToDoHeader 里面添加的数据，怎么放到 ToDoMain
+         1. 父子之间容易传递，兄弟之间如何传递数据？
+         2. 三种高级方法，一种初级方法
+            1. 初级：将数据放到父亲，兄弟都可以访问了
+               1. 把 ToDoMain 的数据写到 App 上，就要把`:todos="todos"` 写到 App 的 template 里面（原本 ToDoMain 里面的属性都不要删改）
+               2. 之后还要再 ToDoMain 里面通过`props:['todos']`接收
+               3. App 和 ToDoMain 中都有数据，一个是 data，一个是 props
+               4. 子组件向父组件传递数据
+                  1. 父组件定义函数，并绑定给子组件，
+                     - `methods:{receive(data){}}`一定要有数据传入
+                     - `:receive="函数名"`
+                     - 这个 receive 可以随意取名，只要不冲突就行了
+                  2. 在子组件中用 props 接收，之后子组件实例上有，可以直接调用该函数
+                     - `props:['receive']`
+                  3. 就传递数据给父了
+            2. 高级
+      4. 清空输入框【在 ToDoHeader 组件的 add 中实现，而不是 receive】
+         - 尽量不直接操作 dom
+         - 需要在 data 中添加数据
+           - data 只能是`data(){return {title:''}}`格式
+           - 一是要写成函数形式，二是要 return 对象
+         - 所以可以用 v-model 双向绑定
+      5. 继续完善
+         1. 输入为空的情况，不新增 todo【在 ToDoHeader 组件的 add 中实现，而不是 receive】
+            - `if(this.title.trim()==='') return`
+            - 什么也不返回
+         2. props、data、methods、computed 等内容不能重名
+         3. 冲突时的优先级顺序：props>data>computed
+4. 启动项目浏览器自动打开网页
+   1. 在 package.json 文件中添加配置项
+   2. `script:{"serve":"vue-cli-service serve --open"}`
+   3. 其实只要添加--open 即可
+5. v-bind 可以绑定不存在的属性？
+   1. 处理 JavaScript 对象或 Vue 组件的数据时，你需要确保你正在绑定的属性已经存在。
+   2. 当尝试使用 v-bind 绑定一个不存在的属性时，Vue 会创建并添加这个新的属性到相应的 HTML 元素上
+6. 勾选操作引起数据变化——组件间通信
+   1. 获取 id，将 complete 取反
+      - input 框，添加 `change` 事件监听，函数可以传入 `todo.id`
+      - 以及原本就有的 `checked` v-bind 绑定为 `todo.complete`
+   2. 数据写在 App 里面，更改 complete 属性的函数写在 App 里面
+      - 数据在哪里，操作数据的方法就在哪里
+      - `methods:{函数名(data){}}`
+      - !!在 App 里面写函数，但是在 ToDoItem 里面要调用函数！所以要再 methods 里面写函数，来调用那个 App 里面的函数
+        - ToDoItem 里面通过 this.函数名调用，因为函数都是在组件实例上的
+      - 在属性的事件处理函数中，不能写 props 里面的函数？props 里面的函数需要用 this 调用，methods 定义的函数可以直接调用
+   3. 因为要对 ToDoMain 里面的 ToDoItem 操作，要将爷爷的数据传递给孙子，要一层层传，先给父，父再给孙
+      - App 里面给 ToDoMain 绑定，传递函数
+      - 再在 ToDoMain 里面给 ToDoItem 绑定，传递函数
+   4. 分别都要用 props 接收
+      - 逐层传递
+7. 勾选操作引起数据变化
+   1. 直接去掉:checked 和@change，也不需要对应的所有实现
+   2. 因为 input 的 type 是 checkbox，直接双向绑定，设置`v-model="todo.complete"`就可以实现这个功能
+   3. 解释
+      1. v-model 是双向数据绑定，可以初始化勾选状态
+      2. 每次更新，都会
+      3. 因为 ToDoItem 里面双向绑定的 todo.complete 中 todo 是 props 传入的，props 是只读的，不能修改。但是这个不能修改指的是深层次的，浅层次的可以。不建议使用。
+8. 删除 todo 项
+   1. 功能描述：(1)悬浮高亮效果，(2)悬浮显示编辑和删除按钮，(3)删除按钮删除本项
+   2. (2)当 li:hover 时给 button 设定样式为显示
+   3. (3)事件绑定
+      1. 在 App 里面写数据项的删除
+      2. 在 ToDoItem 里面写一些其他的判断操作，如 confirm ，类似于 alert
+         - 点击确定，返回值为真，取消为假
+      3. !!!永远记得，在接收的地方，要写一个新的函数！便于一些特殊的操作；之后再用 this 调用 App 传过来的函数
+9. （这下面都是自己做的）底部计数完成个数和总数
+   1. computed 中的属性必须写成函数的形式，而且如果要使用 this，只能是普通函数不能是箭头函数
+   2. 直接用计算属性，设置 done 和 all，直接根据 todos 来更新，只需要传递 todos，不需要传递 deleteToDo
+10. 全选按钮
+    1. 根据前面的计算属性 done 和 all 实现，其他开关来控制总的开关，写在函数里面，要()调用获取返回值
+    2. 通过监听 change 事件，来控制其他开关
+       - 写 if 语句，监听 change 事件的 e.target.checked，对 todos 每一项，修改 complete 值
+    3. 完善
+       1. 当任务列表为空时，将全选按钮为 false
+       2. 好像有点难实现！？因为要监听的不只是一个按钮
+       3. 应该把这个全选按钮放到 data 里面？放到 computed 里面？
+11. 清除已完成任务
+    1. （错误答案）直接在 footer 里面，给这个按钮绑定点击事件，通过 filter 重新给 todos 传值，错了，因为不能修改 props
+       - `[Vue warn]: Avoid mutating a prop directly since the value will be overwritten whenever the parent component re-renders. Instead, use a data or computed property based on the prop's value. Prop being mutated: "todos"`
+    2. 重新考虑，因为这是要直接操作 todos 数据，在 App 里面，所以还是那套流程
+       - 在 Footer 那边遍历 todos，查看 complete 为 true 的，props 传递过来 deleteToDo，并调用，传入 id
+    3. 可以 confirm 一下
+    4. 如果根本没有已选的？要使点击无效，或者弹出没有已完成的任务
+       - 添加逻辑，统计已完成个数，为 0 则 alert 并 return
+       - 而且是在最前面实现
+12. 全选按钮待完善
