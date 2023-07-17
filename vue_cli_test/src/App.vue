@@ -2,7 +2,7 @@
     <div>
         <div class="todo-container">
         <div class="todo-wrap">
-            <ToDoHeader :addToDo="receive"/>
+            <ToDoHeader @addToDo="receive"/>
             <ToDoMain 
                 :todos="todos" 
                 :checkToggle="checkToggle"
@@ -10,8 +10,8 @@
             />
             <ToDoFooter
                 :todos="todos" 
-                :deleteToDo="deleteToDo"
-                :checkAllToDo="checkAllToDo"
+                @deleteToDo="deleteToDo"
+                @checkAllToDo="checkAllToDo"
             />
         </div>
     </div>
@@ -33,11 +33,7 @@ export default {
     },
     data(){
         return {
-            todos:[
-                {id:'001',thing:'学习VueSGG',complete:true},
-                {id:'002',thing:'学习ES6',complete:false},
-                {id:'003',thing:'学习尚品汇',complete:false},
-            ]
+            todos:JSON.parse(localStorage.getItem('todos'))?JSON.parse(localStorage.getItem('todos')):[]
         }
     },
     methods:{
@@ -54,6 +50,14 @@ export default {
         },
         checkAllToDo(check){
             this.todos.forEach((todo)=>todo.complete=check)
+        }
+    },
+    watch:{
+        todos:{
+            deep:true,
+            handler(value){
+                return localStorage.setItem('todos',JSON.stringify(value))
+            }
         }
     }
 }

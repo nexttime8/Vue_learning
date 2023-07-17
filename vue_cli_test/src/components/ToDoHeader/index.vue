@@ -8,7 +8,7 @@
     import {nanoid} from 'nanoid'
     export default {
         name:"",
-        props:['addToDo'],
+        // props:['addToDo'],
         data(){
             return {
                 title:''
@@ -19,7 +19,8 @@
                 // console.log(e.target.value)
                 if(this.title.trim()==='') return
                 const todoObj = {id:nanoid(),thing:this.title,complete:false}
-                this.addToDo(todoObj)
+                // this.addToDo(todoObj)
+                this.$emit('addToDo',todoObj)
                 // e.target.value = '' // 为了不直接操作dom，添加data属性title，双向绑定
                 this.title = ''
             }

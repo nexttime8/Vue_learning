@@ -13,7 +13,7 @@
 <script>
     export default {
         name:"",
-        props:['todos','deleteToDo','checkAllToDo'],
+        props:['todos'],
         computed:{
             done(){
                 // return this.todos.filter((todo)=>todo.complete).length
@@ -27,7 +27,7 @@
                     return this.done === this.all && this.all > 0
                 },
                 set(value){
-                    this.checkAllToDo(value)
+                    this.$emit('checkAllToDo',value)
                 }
             }
         },
@@ -47,7 +47,7 @@
                 }
                 if(confirm('确定要删除已完成的任务吗？')){
                     this.todos.forEach((todo)=>{
-                    if(todo.complete)this.deleteToDo(todo.id)
+                    if(todo.complete)this.$emit('deleteToDo',todo.id)
                 })
                 }
             }
