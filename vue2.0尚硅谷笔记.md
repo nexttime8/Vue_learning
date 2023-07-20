@@ -459,7 +459,7 @@
    - xss 安全性问题-冒充用户之手
    - 只能在可信的内容上使用 v-html，不要再用户提交的内容上使用 v-html
 3. v-cloak
-   - 写服务器？:server.js，命令 node server，延时获取 Vue.js
+   - 写服务器？:server.js，命令 启动服务器`node server`，延时获取 Vue.js
    - js 阻塞？讲 html 结构的时候讲过
    - 不能出现闪现效果，script 写在 body 最后面容易出现
    - v-cloak 没有取值，Vue.js 导入之后，这个属性就会消失
@@ -1368,3 +1368,70 @@
 9. 有了这个库，直接在 transition 或者 transition-group 标签上添加 enter-active-class 或 leave-active-class 属性指定
 10. noty 库，安装`cnpm install noty`，引入`import Noty from 'noty'`和`import 'noty/lib/noty.css'`，使用`new Noty({}).show();`，注意版本
 11. 其他库重装，总会引起 nanoid 库出错，需要重装 nanoid
+
+# 配置代理
+
+1. 解决 ajx 请求跨域问题
+2. nodejs 写的 js 文件格式的服务器，通过`node 文件名`启动服务器，`http://localhost:5000/students`，和`http://localhost:5001/cars`
+   1. nodejs 写的很简单
+   2. 第一步 require
+      - `const express = require('express')`
+      - 为什么 require 里面是 express 字符串？
+   3. 第二步调用
+      - `const app = express()`
+   4. 第三步 use 函数
+      - 这写都是在服务器里面写，才能获取的
+      - `app.use((request,response,next)=>{console.log(request.url);console.log(request.get('Host'));next()})`
+   5. 第四步 get 请求
+      - `app.get('路径',(request,response)=>{response.send(数组)})`
+   6. 第五步 listen 监听
+      - `app.listen(端口号,(err)=>{if(!err) console.log()})`
+3. 常用发送 ajax 请求的方式
+   1. xhr，new XMLHttpRequest(), xhr.open(), xhr.send()，不常用，一般都封装后使用，如下面两个
+   2. jQuery，$.get, $.post，体积大，是专业操作 dom 的
+   3. axios，Promise 风格，支持请求响应拦截器，体积小，推荐
+   4. fetch，和 xhr 同级的，Promise 风格，致命问题：两层 Promise，兼容性问题 IE 用不了
+4. 安装 axios，`cnpm install --save axios`
+5. 引入 axios，`import axios fron 'axios'`
+6. axios 获取请求，`axios.get('xxx').then((response)=>{}).catch((error)=>{console.log(error.message)})`
+7. 跨域：cors、access-control-allow-origin，违背同源策略，协议、域名、端口号
+8. CORS、JSONP、
+   1. JSONP，script 标签 src 属性，前后端配合，只能解决 get 请求问题
+   2. CORS，后端
+   3. proxy 代理服务器
+      - 和前端所处端口号一样，发给代理服务器，代理服务器转发给其他端口号
+      - 服务器和服务器之间，不用 ajax，有浏览器有 window 才有 fetch，nodejs 里面创建不了 xhr，最传统的 HTTP 请求
+      1. nginx，学习成本比较高，对后端技术有要求
+      2. vue-cli 开启
+9. 对 vue-cli 进行配置，写 `vue.config.js` 文件，查看 vue 官网的配置参考，`devServer.proxy`设置，vue-cli 帮本地项目开了一台服务器
+   1. 方式一：`devServer{proxy: "http://localhost:5000"}`
+      1. public 里面有的 8080 端口都有，8080 有的代理服务器不会转发，无法灵活控制是否请求代理
+      2. 不能配置多个代理
+      3. ajax 请求的时候直接发给 8080 即可！
+   2. 方式二：
+      ```js
+      devServer:{
+         proxy:{
+            '/api':{ // 请求前缀，走代理就加/api，不走就不加/api，紧跟端口号！
+               target:'http://localhost:5000',// 请求地址，基础路径
+               ws:true,// 用于支持websocket
+               changeOrigin:true,// 请求头中的Host值，true假端口号和后端一样，false真实端口号，默认true
+            },
+            '/xxx'{} // 其他，匹配所有以/xxx开头的请求路径
+         }
+      }
+      ```
+      - 要在 target 里写服务器端口号
+      - 要保证 ajax 请求，写上了基础路径/api 则用的是代理，没加就是直接的前端 public 的
+      - ajax 请求，同样是写 8080
+      ```js
+      proxy:{
+         pathRewrite:{'^/api':''}
+      }
+      ```
+      1. 可以配置多个代理，灵活控制请求是否走代理
+      2. 配置繁琐，ajax 请求资源的时候必须要加前缀
+
+# 静态组件
+
+1. 组件化编码第一步，拆分静态组件
