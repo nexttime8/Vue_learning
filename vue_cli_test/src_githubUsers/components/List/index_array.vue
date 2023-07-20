@@ -36,16 +36,16 @@ export default {
       getUserInfo(value,dataObj){
         this.users = value
         this.info = {...this.info,...dataObj}
-        this.loadedImages = this.users.map((user) => ({
+        this.loadedImages = this.users.map((user) => ({ // 生成加载出来的图片的对象数组
           login: user.login,
           isLoaded: false,
         }));
       },
       onImageLoad(login) {
-        const image = this.loadedImages.find((img) => img.login === login);
+        const image = this.loadedImages.find((img) => img.login === login); // 找第一个
         if (image) {
           this.$set(image, 'isLoaded', true); // 使用 $set 方法更新属性
-          this.$forceUpdate(); // 强制重新渲染组件
+          // this.$forceUpdate(); // 强制重新渲染组件
         }
       },
       isImageLoaded(login) {
