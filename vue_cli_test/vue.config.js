@@ -2,14 +2,21 @@ const { defineConfig } = require("@vue/cli-service")
 module.exports = defineConfig({
   transpileDependencies: true,
   devServer: {
-    host: "0.0.0.0",
-    port: 8080, // 你想要的端口
-    hot: true,
-    allowedHosts: [
-      "host.docker.internal", // for docker
-      "localhost",
-      // 如果你想要其他主机名可以访问，你可以添加到这个列表
-    ],
+    // proxy: {
+    //   "/api1": {
+    //     target: "http://localhost:5000",
+    //     pathRewrite: { "^/api1": "" },
+    //     // ws: true,
+    //     changeOrigin: true,
+    //   },
+    //   "/api2": {
+    //     target: "http://localhost:5001",
+    //     pathRewrite: { "^/api2": "" },
+    //     // ws: true,
+    //     changeOrigin: true,
+    //   },
+    // },
+    proxy: "http://localhost:5000", // 这样请求的时候即使写了不存在的基础路径，也会被忽略，正常显示
   },
   lintOnSave: false, // 关闭语法检查
 })
