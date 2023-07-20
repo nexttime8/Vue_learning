@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <!-- 列表展示 -->
-    <div class="card" v-for="user in users" v-show="users.length">
+    <div class="card" v-for="user in users" v-show="users.length" :key="user.login">
       <a :href="user.html_url" target="_blank">
         <img v-show="isImageLoaded(user.avatar_url)" :src="user.avatar_url" style='width: 100px' @load="onImageLoad(user.avatar_url)"/>
         <img v-show="!isImageLoaded(user.avatar_url)" style='width: 100px' src="../List/images/loading.gif">
