@@ -4,9 +4,9 @@
         v-for="todoObj in todos" 
         :key="todoObj.id" 
         :todo="todoObj" 
-        :checkToggle="checkToggle"
-        :deleteToDo="deleteToDo"
      />
+     <!-- :checkToggle="checkToggle"
+    :deleteToDo="deleteToDo" -->
   </div>
 </template>
 
@@ -17,7 +17,8 @@
         components:{
             ToDoItem,
         },
-        props:['todos','checkToggle','deleteToDo']
+        props:['todos']
+        // ,'checkToggle','deleteToDo'
     }
 </script>
 

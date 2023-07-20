@@ -23,6 +23,7 @@
                 this.$emit('addToDo',todoObj)
                 // e.target.value = '' // 为了不直接操作dom，添加data属性title，双向绑定
                 this.title = ''
+                this.$bus.$emit('addNotification',"success")
             }
         }
     }

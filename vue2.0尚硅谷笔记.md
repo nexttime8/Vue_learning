@@ -1172,4 +1172,199 @@
 
 # ToDoList 案例改成本地存储
 
-1. 
+1. 什么时候存？？
+2. watch 监视 todos，App.vue 里面写
+   - `watch:{todos(value){}}`
+3. 不是直接 setItem 就好，要`JSON.stringify(value)`
+4. 初始化的时候 todos 不是[]，而是从 localStorage 读入，要解析`JSON.parse('todos')`
+   - 第一次用的时候 todos 是空的，要分情况讨论，有两种写法
+     - `todos:JSON.parse(localStorage.getItem('todos'))?[]:JSON.parse(localStorage.getItem('todos'))`
+     - `todos:JSON.parse('localStorage.getItem('todos'))||[]`
+   - 注意解析和获取的顺序！
+5. 还要记录勾选的情况
+   1. 应该深度监视！
+   ```js
+   todos(value){
+            return localStorage.setItem('todos',JSON.stringify(value))
+        }
+   // 改写成完整版形式
+   todos:{
+      deep:true,
+      handler(value){
+            return localStorage.setItem('todos',JSON.stringify(value))
+      }
+   }
+   ```
+
+# 组件的自定义事件
+
+## 简单实用-绑定
+
+1. 区别于 js 里面的内置事件（click、keyup、mouseenter 等
+   - 内置事件是给 html 元素用的
+2. 自定义事件是给组件用的
+   1. v-on 是给组件实例对象绑定事件
+   2. 组件标签上写`v-on:随便名字=""`
+   3. 在组件实例对象中触发事件`this.$emit('随便名字')`
+3. 绑定自定义事件，实现子给父传数据
+4. 可以在父组件中获取子组件实例对象
+   1. `this.$refs.student`
+   2. Vue.app 里面调用，mounted 里面写`this.$refs.student.$on('随便名字',this.methods里面的函数)`，灵活性强，可以延迟绑定
+      - 不用 methods 里面的函数，又要用到 Vue 组件实例，可以把函数写成箭头函数，这时候的 this 就是 Vue 组件实例
+   3. 为什么函数要写在 methods 里面，因为可能用到 this 也就是 Vue 组件实例，如果直接在`this.$refs.student.$on`里面写，this 会是 student 组件实例而不是 Vue
+      - 谁触发的事件，this 就是谁
+5. 触发一次之后不能再触发了
+   - `this.$refs.student.$once('随便名字',this.methods里面的函数)`
+   - 再组件标签里面写就是`v-on:随便名字.once=""`
+
+## 解绑自定义事件
+
+1. 解绑一个自定义事件`this.$off('随便名字')`
+2. 解绑多个自定义事件`this.$off(['随便名字1','随便名字1'])`
+3. 解绑多个自定义事件`this.$off()`
+4. 销毁组件实例对象，`this.$destory()`，销毁后所有实例自定义事件都失效，原生的事件不受影响（但是不会再更新绑定）
+
+## 自定义事件注意点
+
+1. 把组件上的事件理解为原生事件`@click.native`
+2. 一种组件间通信的方式，适用于：子组件=>父组件
+3. 使用场景：A 是父组件，B 是子组件，B 想给 A 传数据，那么就要在 A 中给 B 绑定自定义事件(事件的回调在 A 中)。
+   - 事件函数的定义要在父组件中定义
+4. 绑定自定义事件：
+   1. 第一种方式，在父组件中：<Demo@atguigu="test"/>或<Demo v-on:atguigu="test"/)
+   2. 第二种方式，在父组件中：
+      <Demo ref="demo"/>
+      mounted（）{
+      this.Srefs.xxx.Son('atguigu',this.test) 3.若想让自定义事件只能触发一次，可以使用 oce 修饰符，或$once 方法。
+5. 触发自定义事件：`this.$emit('atguigu',数据)`
+6. 解绑自定义事件 `this.$off('atguigu')`
+7. 组件上也可以绑定原生 DOM 事件，需要使用 native 修饰符。
+8. 注意：通过 `this.$refs.xxx.on('atguigu',回调)`绑定自定义事件时，回调要么配置在 methods 中，要么用箭头函数，否则 this 指向会出问题！
+
+# todolist 案例中所有子向父传函数全改为自定义事件
+
+1. App.vue 文件中 ToDoHeader 组件的`:addToDo=:receive`改成`@addToDo=:receive`
+   - 给 ToDoHeader 组件添加自定义事件，自定义事件的名字叫 addToDo，且事件的回调函数叫 receive
+2. 之后 vue 文件中 ToDoHeader.vue 文件中不需要再用 props 接收父组件传过来的数据
+   - 不要 props:['addToDo']
+3. 添加也不再是调用函数`this.addToDo(todoObj)`，改成`this.$emit('addToDo',todoObj)`
+   - $emit()，前面这个是事件的名字，后面那个是传值，所以有没有第二个参数看情况
+   - 之后可以在 vue 模块看到事件的情况，再 timeline 里面点击一些时间点，右侧就会显示
+   - 或者直接是 component event 组件事件
+4. 因为父给子传函数是为了子给父传数据，所以这些都可以改成自定义事件，但是父给子传数据是不可以改成自定义事件的！
+   1. 其实就是 App.vue 中写的所有的组件的`:事件="事件"`，都改成@
+   2. App 要传到 ToDoItem 怎么传？爷传到父，再父传到孙？
+      - 直接传递是传不了的！
+
+# 全局事件总线
+
+1. 可以实现任意组件间的通信，兄弟之间的通信实现了
+2. 事件的发布和订阅，实现解耦和灵活的通信方式
+3. Vue 中，通过创建一个全局的 Vue 实例来充当事件总线
+4. 发布订阅模式，$emit和$on
+5. 复习
+   1. VueComponent 不是程序员生成的，是 Vue.extend 生成的
+   2. `VueComponent.prototype.__proto__ = Vue.prototype`
+   3. 也就是只能 VueComponent 实例对象放到 Vue 的原型对象上，VueComponent 放不了，因为每次调用都是生成新的
+6. 怎么 new 一个组件实例对象？
+   - `const Demo = Vue.extend({})`——返回一个 VueComponent 类
+   - `const d = new Demo()`——创建 VueComponent 类实例
+7. 复习组件使用步骤
+   1. 定义、创建组件
+   2. 注册组件
+   3. 使用组件-写标签
+8. 安装全局事件组件步骤
+   1. 在 main.js 中 new 一个组件实例对象，并在 Vue 的原型上添加一个属性，值为这个组件实例对象
+      - 总之要让所有的组件都看得见
+      - 改写：直接用 Vue 实例对象，在 Vue 实例对象上写 beforeCreate 生命周期函数
+   2. 将这个组件实例对象或者 Vue 实例对象(this)，添加到 Vue 原型上。在 main.js 文件中
+      - `Vue.prototype.$bus = this`
+      - 可以是任意名称，一般用$bus
+9. 之后就可以在子组件上使用（这三个都在 Vue 的原型对象上）
+   1. `this.$bus.$emit('xx',data)`注册回调，提供数据
+   2. `this.$bus.$on('xx',(data)=>{})`调用触发，接收数据
+   3. `this.$bus.$off('xx')`关闭
+10. 组件销毁之前，结束调用
+11. 总结
+    1. 一种组件间通信的方式，适用于任意组件间通信。
+    2. 安装全局事件总线：
+    ```js
+    new Vue({
+      beforeCreate() {
+        Vue.prototype.$bus = this
+        //安装全局事件总线，bus就是当前应用的vm
+      },
+    })
+    ```
+    3. 使用事件总线：
+       1. 接收数据：A 组件想接收数据，则在 A 组件中给$bus 绑定自定义事件，事件的回调留在 A 组件自身。
+       ```js
+       methods(){
+         demo(data){...}
+       },
+       mounted(){
+         this.$bus.on('xxxx',this.demo)
+       }
+       ```
+       2. 提供数据：`this.$bus.$emit('xx',数据)`
+    4. 最好在 beforeDestroy 钩子中，用$off 去解绑当前组件所用到的事件。
+
+# todolist 案例-全局事件总线
+
+1. ToDoItem 和 App 之间需要逐层传递数据，所以用全局事件总线
+2. 按顺序
+   1. main.js 安装全局事件总线，beforeCreate
+   2. 收数据的(App.vue)，mounted 里面$bus.$on 绑定事件总线的自定义事件
+      1. 第一个参数是事件
+      2. 第二个参数是回调函数
+   3. 在 ToDoItem 里面触发，调用传数据
+
+# 消息订阅与发布
+
+1. 安装库
+   - `cnpm i pubsub-js`
+2. 引入
+   - `import pubsub from 'pubsub-js'`引入的是一个对象
+3. 订阅——对应于 on
+   - 接收数据的 vue 文件，mounted 里面`this.pubId = pubsub.subscribe('hello',function(a,b){})`a 是消息名，b 是数据
+4. 发布——对应于 emit
+   - 提供数据的 vue 文件，在函数里面`pubsub.publish('hello',data)`
+5. 解绑
+   - 接受数据的 vue 文件，beforeDestroy 里面`pubsub.subscribe(this.pubId)`
+6. pubsub.subscribe 回调建议使用箭头函数的形式，使用组件的 this
+7. 或者把回调函数写到组建的 methods 里面
+
+# todolis 案例-消息订阅实现
+
+1. App.vue 需要数据，ToDoItem 提供数据
+2. 不用的数据用下划线占位
+3. pubsub 第三方库，timeline 看不到事件
+
+# todolist 编辑
+
+1. todo 加一个属性，isEdit
+2. $set()添加的属性才是响应式的
+   - 只在第一次编辑的时候添加属性
+   - 属性的存在性判断：`hasOwnProperty('')`
+3. 点击编辑按钮，将 input 聚焦，ref 属性
+   1. 给 input 添加 ref 属性
+   2. 通过`this.$refs.ref属性值.focus()`聚焦
+4. 点击的时候页面上还没有 input 框
+   - $nextTick，其指定的回调函数，会在 dom 更新之后执行
+   - 将上述聚焦操作，放在这里面
+   - 等 isEdit 值改变，导致 input 框出现之后，才能聚焦
+
+# 动画效果
+
+1. click 控制显示与否，取反
+2. 动画效果，keyframs，from-to，transform
+3. transition 标签，来的时候动画类名`v-enter-active`，离开时候的动画类名`v-leave-active`，隐藏和显示动画；标签设置 name 属性则，`name值-enter-active`；apper 属性值设置为 true，`:apper="true"`或者`appear`；Vue 自动加类名；transition 不是真正的标签
+4. 前提是控制隐藏于显示
+5. CSS 过渡和动画效果通常需要应用在支持动画属性的元素上，例如 block 元素或具有布局的元素
+6. `v-enter`，`v-enter-to`，`v-leave`，`v-leave-to`，在标签下设置 transition 属性加时间 linear 实现，或者与`v-enter-active`，`v-leave-active`设置 transition 属性加时间 linear 实现
+   - 可以组合选择使用同一个样式
+7. 多个元素同样动画效果，`transition-group`标签，一个去一个会
+8. animate.css，安装`cnpm install animate.css`，animate.style 网站
+9. 有了这个库，直接在 transition 或者 transition-group 标签上添加 enter-active-class 或 leave-active-class 属性指定
+10. noty 库，安装`cnpm install noty`，引入`import Noty from 'noty'`和`import 'noty/lib/noty.css'`，使用`new Noty({}).show();`，注意版本
+11. 其他库重装，总会引起 nanoid 库出错，需要重装 nanoid

@@ -5,14 +5,15 @@
             <ToDoHeader @addToDo="receive"/>
             <ToDoMain 
                 :todos="todos" 
-                :checkToggle="checkToggle"
-                :deleteToDo="deleteToDo"
             />
+            <!-- :checkToggle="checkToggle" -->
+            <!-- :deleteToDo="deleteToDo" -->
             <ToDoFooter
                 :todos="todos" 
                 @deleteToDo="deleteToDo"
                 @checkAllToDo="checkAllToDo"
             />
+            <FootNotification/>
         </div>
     </div>
     </div>
@@ -22,6 +23,7 @@
 import ToDoHeader from './components/ToDoHeader'
 import ToDoFooter from './components/ToDoFooter'
 import ToDoMain from './components/ToDoMain'
+import FootNotification from './components/FootNotification'
 
 export default {
     // [Vue warn]: option "el" can only be used during instance creation with the `new` keyword.
@@ -30,6 +32,7 @@ export default {
         ToDoHeader,
         ToDoFooter,
         ToDoMain,
+        FootNotification,
     },
     data(){
         return {
@@ -48,9 +51,26 @@ export default {
         deleteToDo(id){
             this.todos = this.todos.filter(todo=>todo.id!==id)
         },
+        updateToDoThing(id,value){
+            this.todos.forEach((todo)=>{
+                if(todo.id===id){
+                    todo.thing = value
+                }
+            })
+        },
         checkAllToDo(check){
             this.todos.forEach((todo)=>todo.complete=check)
         }
+    },
+    mounted(){
+        this.$bus.$on('checkToggle',this.checkToggle)
+        this.$bus.$on('deleteToDo',this.deleteToDo)
+        this.$bus.$on('updateToDoThing',this.updateToDoThing)
+    },
+    beforeDestroy(){
+        this.$bus.$off('checkToggle')
+        this.$bus.$off('deleteToDo')
+        this.$bus.$off('updateToDoThing')
     },
     watch:{
         todos:{
@@ -87,6 +107,13 @@ export default {
         color: #fff;
         background-color: #da4f49;
         border: 1px solid #bd362f;
+    }
+
+    .btn-common{
+        color: #fff;
+        background-color: #c1d4ec;
+        border: 1px solid #8db5e6;
+        margin-right: 5px;
     }
 
     .btn-danger:hover {

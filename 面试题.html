@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // 京东面试
+        console.log(1)
+        setTimeout(function () {
+            console.log(2)
+            setTimeout(function () { console.log(9) })
+            let pro2 = new Promise(function (resolve, reject) {
+                console.log(7)
+                resolve()
+            }).then((r) => {
+                console.log(8)
+            })
+        })
+        let pro = new Promise(function (resolve, reject) {
+            console.log(3)
+            resolve()
+        }).then((r) => {
+            console.log(4)
+        })
+        let fn = async function () {
+            console.log(5)
+            let a = await pro
+            console.log(6)
+        }
+        fn()
+    </script>
+</body>
+
+</html>
