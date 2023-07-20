@@ -1,36 +1,46 @@
 <template>
-    <div>
-        <button @click="getStuData">获取学生数据</button>
-        <button @click="getCarData">获取汽车数据</button>
-    </div>
+  <div class="container">
+    <Search/>
+    <List/>
+  </div>
 </template>
 
 <script>
-import axios from 'axios'
+import Search from '@/components/Search'
+import List from '@/components/List'
 export default {
-    // [Vue warn]: option "el" can only be used during instance creation with the `new` keyword.
-    name:"proxy",
-    methods:{
-        getStuData(){
-            axios.get('http://localhost:8080/api1/students').then((response)=>{
-                console.log(response.data)
-                console.log(response.url)
-            }).catch((error)=>{
-                console.log(error.message)
-            })
-        },
-        getCarData(){
-            axios.get('http://localhost:8080/api2/cars').then((response)=>{
-                console.log(response.data)
-            }).catch((error)=>{
-                console.log(error.message)
-            })
-        },
+    name:"github_test",
+    components:{
+        Search,
+        List,
     }
 }
-
 </script>
 
-<style scoped>
+<style>
+.album {
+  min-height: 50rem; /* Can be removed; just added for demo purposes */
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  background-color: #f7f7f7;
+}
+
+.card {
+  float: left;
+  width: 33.333%;
+  padding: .75rem;
+  margin-bottom: 2rem;
+  border: 1px solid #efefef;
+  text-align: center;
+}
+
+.card > img {
+  margin-bottom: .75rem;
+  border-radius: 100px;
+}
+
+.card-text {
+  font-size: 85%;
+}
 
 </style>

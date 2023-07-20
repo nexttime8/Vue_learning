@@ -1432,6 +1432,83 @@
       1. 可以配置多个代理，灵活控制请求是否走代理
       2. 配置繁琐，ajax 请求资源的时候必须要加前缀
 
-# 静态组件
+# github 案例-静态组件
 
 1. 组件化编码第一步，拆分静态组件
+2. 三方样式库
+   1. 方式一：asset 里面，import 引入
+      1. `assets/css/bootstrap.css`，
+      2. 然后在 App.vue 中引入，`import './assets/css/bootstrap.css'`，如果这个第三方样式库用到脚手架中不存在的资源，会报错
+   2. 方式二：public 里面
+      1. `public/css/bootstrap.css`
+      2. 然后在 index.html 中引入，`<link rel="stylesheet" href="<%= BASE_URL %>css/bootstrap.css">`
+      3. 最外层标签在 index.html 中，所以所有的标签都能用这个样式库了
+      4. 没用到的不存在的资源，不影响不报错
+
+# github 案例-动态组件
+
+1. 接口地址：`https://api.github.com/search/users?q=xxx`，get，cors 解决了跨域问题的
+2. 使用全局事件总线，将 search 请求接受的数据，传给 list，前提是安装了全局事件总线
+   1. main.js 文件中
+   2. vm 中
+   3. beforeCreate(){}中
+      - 将全局事件总线添加到 beforeCreate 阶段是为了确保在 Vue 实例创建之后就可以在组件中使用全局事件总线进行通信，而不需要等到依赖注入和响应式数据的初始化完成。这样可以提前进行组件之间的通信，并且在后续的生命周期中仍然可以继续使用全局事件总线。
+   4. Vue.prototype.$bus = this
+3. 页面上没用到的数据，在 vue 开发者工具中，不会是实时更新
+4. 完善——）list
+   1. 欢迎词
+   2. 加载中效果
+   3. 失败错误信息
+5. 数据驱动页面展示
+   1. 多个数据用对象传，更加语义化
+      1. 在 data 里面也用对象接收
+      2. 用 data 解构
+   2. 不需要更新的数据，直接不传
+      1. data 用对象接受的情况，会导致不传的数据丢失
+      2. 直接解构，通过字面量的方式合并 info
+         - `this.info = {...this.info,...dataObj}`
+         - 重名的后面的优先，覆盖
+         - 顺序无所谓、个数无所谓
+6. 依赖注入与双向绑定在 beforeCreate 阶段都没有完成。依赖注入的主要方式是通过提供/注入（Provide/Inject）功能实现的?Vue 使用了 Object.defineProperty 或 Proxy 来劫持数据对象的属性，当数据发生变化时，会自动触发依赖更新?
+7. 完成整个流程
+   1. 将静态页面放入，App.vue，创建好 main.js，将 App.vue 拆分组件，将第三方样式库放入 public 文件夹 css 中，在 public 中 index.html 通过 link 引入，用基础路径的格式
+   2.
+8. 标签的属性值怎么用变量来着？
+   - 冒号绑定！
+9. 加载样式库
+   1. `cnpm install --save animate.css`
+   2. `import 'animate.css';`
+   3. `<div class="loader animated bounce"></div>`
+10. 报错解决
+    1. 报错信息：`DevTools failed to load source map: Could not load content for http://localhost:8080/css/bootstrap.css.map: HTTP error: status code 404, net::ERR_HTTP_RESPONSE_CODE_FAILURE`
+    2. 报错原因：
+       1. 项目引用的第三方的 JavaScript 工具是压缩后的版本，
+       2. 存在 SourceMap 的指向信息，
+       3. 浏览器启用了 JavaScript 源映射，
+       4. 但是我的项目中没有相应的 SourceMap 文件，所以抛出此异常。
+    3. 报错解决
+       1. Chrome-F12-settings
+       2. preferences-sources-unenable JavaScript source maps
+       3. preferences-console-unenable CSS source map
+11. 进一步完善
+    1. 图片没有完全加载出来？懒加载？
+    2. 加载中图片生成网站：https://www.intogif.com/loading/
+    3. 记得要传参数
+    4. 多张图片不能用一个属性来表示，要一个图片对应一个 boolean 值！
+    5. @没有监听到图片加载完毕？
+    6. 在 v-for 循环中，直接使用@load 监听图片加载事件是无法正常工作的。原因是在 v-for 循环中，无法准确地将@load 事件绑定到每个图片元素上。正确的做法是使用自定义指令来处理图片加载事件。
+    7. 如何让图片在没有被完全加载出来之前不显示？
+    8. 图片加载完的定义是什么？图片加载完还会从上到下慢慢显示出来吗？
+    9. 用 v-show 来控制两张图片交替显示
+    10. 图片懒加载
+        1. `cnpm install --save vant`
+        2. 懒加载果然很好用，有了这个插件之后，上面的所有的等待加载完毕，什么时候开始加载，统统都不需要考虑，也不需要写任何函数，直接一个 v-lazy 属性指名图片地址即可
+    11. 性能优化！
+        1. 图片加载完成后，不需要强制重新渲染整个组件。可以使用响应式属性或计算属性来动态控制图片的显示与隐藏，从而避免不必要的组件重新渲染。
+        2. 考虑使用懒加载（Lazy Loading）的方式加载图片。只有当图片进入可视区域时再加载图片，可以通过监听滚动事件来判断图片是否进入可视区域。
+        3. 对于大量图片加载的情况，可以使用图片预加载技术，提前加载图片资源，以减少用户等待时间。
+        4. 优化图片的尺寸和格式，减小图片文件的大小，加快加载速度。
+    12. 图片路径问题
+        1. vue 项目中 src 里面的文件不在 http://localhost:8000 里面吗？ 可以在组件中使用相对路径来引用它：直接标签里面是可以写相对路径的
+        2. 在 main.js 中，由于是入口文件，相对路径访问图片可能会有一些限制。默认情况下，main.js 是相对于 HTML 文件（通常是 index.html）的路径进行解析的。没想到吧！
+        3. 如果你想在 main.js 中使用相对路径访问图片，可以考虑使用 require 或 import 导入图片文件。这样可以确保相对路径是相对于 main.js 文件的位置。
