@@ -1,18 +1,23 @@
 <template>
-  <div class="container">
-
+  <div>
+    <BlogHeader/>
+    <router-view></router-view>
+    <BlogFooter/>
   </div>
 </template>
 
 <script>
+// import BlogHeader from '@/components/BlogHeader'
+// import BlogFooter from '@/components/BlogFooter'
 export default {
-    name:"",
+    name:"BlogWeb",
+    components:{
+      // BlogFooter,
+      // BlogHeader,
+    }
 }
 </script>
 
 <style>
-  .container{
-    display: flex;
-    justify-content: space-around;
-  }
+
 </style>

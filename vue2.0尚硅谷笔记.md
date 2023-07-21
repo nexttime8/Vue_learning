@@ -1496,7 +1496,7 @@
     3. 记得要传参数
     4. 多张图片不能用一个属性来表示，要一个图片对应一个 boolean 值！
     5. @没有监听到图片加载完毕？
-    6. （第一个关于v-for的知识点）在 v-for 循环中，直接使用@load 监听图片加载事件是无法正常工作的。原因是在 v-for 循环中，无法准确地将@load 事件绑定到每个图片元素上。正确的做法是使用自定义指令来处理图片加载事件。
+    6. （第一个关于 v-for 的知识点）在 v-for 循环中，直接使用@load 监听图片加载事件是无法正常工作的。原因是在 v-for 循环中，无法准确地将@load 事件绑定到每个图片元素上。正确的做法是使用自定义指令来处理图片加载事件。
     7. 如何让图片在没有被完全加载出来之前不显示？
     8. 图片加载完的定义是什么？图片加载完还会从上到下慢慢显示出来吗？
     9. 用 v-show 来控制两张图片交替显示
@@ -1512,56 +1512,199 @@
         1. vue 项目中 src 里面的文件不在 http://localhost:8000 里面吗？ 可以在组件中使用相对路径来引用它：直接标签里面是可以写相对路径的
         2. 在 main.js 中，由于是入口文件，相对路径访问图片可能会有一些限制。默认情况下，main.js 是相对于 HTML 文件（通常是 index.html）的路径进行解析的。没想到吧！
         3. 如果你想在 main.js 中使用相对路径访问图片，可以考虑使用 require 或 import 导入图片文件。这样可以确保相对路径是相对于 main.js 文件的位置。
-    13. 第二个关于v-for的知识点：在 Vue.js 中使用 v-for 指令循环渲染元素时，每个循环的元素都应该有一个唯一的 key 属性，以便 Vue 可以跟踪每个元素的身份，从而提高渲染性能。
-12. 之前有一个什么来着，只能是块级元素，span不能怎么怎么样
-13. 数组实现方法中，用到了map、find等函数
-   1. Array.prototype.find() 是 JavaScript 中的一个数组方法，用于在数组中查找满足条件的第一个元素，并返回该元素。它接受一个回调函数作为参数，该回调函数用于定义匹配条件。
+    13. 第二个关于 v-for 的知识点：在 Vue.js 中使用 v-for 指令循环渲染元素时，每个循环的元素都应该有一个唯一的 key 属性，以便 Vue 可以跟踪每个元素的身份，从而提高渲染性能。
+12. 之前有一个什么来着，只能是块级元素，span 不能怎么怎么样
+13. 数组实现方法中，用到了 map、find 等函数
+14. Array.prototype.find() 是 JavaScript 中的一个数组方法，用于在数组中查找满足条件的第一个元素，并返回该元素。它接受一个回调函数作为参数，该回调函数用于定义匹配条件。
 
 # vue-resource——发送请求
 
-1. vue里面的插件库，通过在main.js文件里面`Vue.use(vueResource)`
-   - 因为只有main.js可以直接使用Vue
+1. vue 里面的插件库，通过在 main.js 文件里面`Vue.use(vueResource)`
+   - 因为只有 main.js 可以直接使用 Vue
 2. 安装`npm install --save vue-resource`
 3. 引入，因为是默认暴露，直接`import vueResource from 'vue-resource`接
-4. 之后所有的vm、vc都有了`$http`
-   - `this.$http.get('')`和axios一模一样
-5. vue1.0用的多，了解即可
+4. 之后所有的 vm、vc 都有了`$http`
+   - `this.$http.get('')`和 axios 一模一样
+5. vue1.0 用的多，了解即可
 
-# slot插槽
+# slot 插槽
 
-1. 动态接收数据，`:listData="data里面的propertyName"`，props传的时候就可以只要一个listData，不用很多很多个
+1. 动态接收数据，`:listData="data里面的propertyName"`，props 传的时候就可以只要一个 listData，不用很多很多个
 2. 默认插槽，将组件标签写成双标签的形式，在双标签里面写需要的其他标签，再在标签里面定义插槽位置，`<slot></slot>`
    - 有组件使用者来插入，样式也可以直接写在组件的使用者里面定义，因为先解析再插入，或者先插入再添加样式
-   - 组件双标签里面为空时，用slot里面的默认值
+   - 组件双标签里面为空时，用 slot 里面的默认值
 3. 常用语组件复用，但是组件里面又有不同的内容的情况
 4. 多个插槽，就用具名插槽更好，如果多个默认插槽，则会同样内容解析多次。插槽通过`name=""`来命名，通过`slot=""`指定具体的插槽。
-5. 可以插槽插入一个div，div里面有几个其他内容
-6. 不影响html结构，不生成多余的元素，用template标签
-7. `v-slot:name值`等价于`slot="name值"`?只能在template标签用前面这个方法，其他标签只能用等于
+5. 可以插槽插入一个 div，div 里面有几个其他内容
+6. 不影响 html 结构，不生成多余的元素，用 template 标签
+7. `v-slot:name值`等价于`slot="name值"`?只能在 template 标签用前面这个方法，其他标签只能用等于
 8. 作用域插槽？数据相同，但是结构不同，由使用者决定。
-   1. 给slot标签传数据，`:games="games"`
-   2. 调用组件标签名，组件标签里面放入template标签，并设置属性`scope="一个名字"`，这个名字用于接收数据，接收到的是一个对象，games是里面的一个属性
+   1. 给 slot 标签传数据，`:games="games"`
+   2. 调用组件标签名，组件标签里面放入 template 标签，并设置属性`scope="一个名字"`，这个名字用于接收数据，接收到的是一个对象，games 是里面的一个属性
       - 解构赋值更方便
       - `scope="一个名字"`等同于`slot-scope="一个名字"`
-   3. 在组件里面的结构可以不一样，只要是在template标签里面，接受同样的数据就行了
-9. 作用：实现组件间通信，父组件向子组件指定位置插入html结构。在子组件中挖坑，父组件中填土。作用域插槽是父组件用子组件里面相同的数据，生成不同的结构。
+   3. 在组件里面的结构可以不一样，只要是在 template 标签里面，接受同样的数据就行了
+9. 作用：实现组件间通信，父组件向子组件指定位置插入 html 结构。在子组件中挖坑，父组件中填土。作用域插槽是父组件用子组件里面相同的数据，生成不同的结构。
 
-# 之前一直使用webpack，现在开始学vuex
+# 之前一直使用 webpack，现在开始学 vuex
 
-1. Vue中实现集中式状态（数据）管理的Vue插件，`Vue(use)来使用`
+1. Vue 中实现集中式状态（数据）管理的 Vue 插件，`Vue(use)来使用`
 2. 对多个组件的共享状态进行集中管理读写，也是一种组件间通信
 3. 全局事件总线不适合多个组件共享状态。
-4. vuex不属于任何一个组件，什么时候使用vuex：多个组件依赖于同一状态，来自不同组件的行为变更同一状态
-5. select标签，双向数据绑定，用`v-model="n"`，这个n是data里面的数据，之后n就会同步select的数据选择
-6. select标签里面的option标签的`value="1"`属性，number会当做字符串，就算是`value=1`也会被转换成字符串
-   - 在value前面加一个:，v-bind！
-   - v-bind当作js表达式解析
+4. vuex 不属于任何一个组件，什么时候使用 vuex：多个组件依赖于同一状态，来自不同组件的行为变更同一状态
+5. select 标签，双向数据绑定，用`v-model="n"`，这个 n 是 data 里面的数据，之后 n 就会同步 select 的数据选择
+6. select 标签里面的 option 标签的`value="1"`属性，number 会当做字符串，就算是`value=1`也会被转换成字符串
+   - 在 value 前面加一个:，v-bind！
+   - v-bind 当作 js 表达式解析
 7. vuex=Actions+Mutations+State(对象)
-   1. 组件dispatch给actions，在组件分发与订阅也用到过
-   2. actions commit给mutations
-   3. mutations mutate给state
+   1. 组件 dispatch 给 actions，在组件分发与订阅也用到过
+   2. actions commit 给 mutations
+   3. mutations mutate 给 state
    4. state render 给组件
-8. vuex具体流程
-   1. 由组件dispatch一个操作和一个数据给Actions
-   2. 由actions定义这个操作，指定一个回调函数
-9. actions有什么用？允许直接提交
+8. **vuex 具体流程（store 来管理）**
+   1. 由组件 dispatch 一个操作和一个数据给 actions
+   2. 由 actions 定义这个操作函数，接收两个参数，第一个参数是迷你版 store-上下文 context，第二个参数是传的数据
+   3. 由 actions 进行 commit 提交一个操作大写，和一个数据给 mutations，如果没有额外操作只 commit，可以直接在组件 commit，不进行 dispatch 到 actions 的操作，commit 里面的操作总要大写
+   4. mutations 定义这个操作大写函数，接受两个参数，第一个参数是 state，第二个参数是数据，函数里面有对 state 的修改，不写其他操作（判断等）
+9. actions 有什么用？允许直接提交，跳过 actions
+10. store 来管理 vuex 的流程，因为 dispatch 是由 stora 提供的，要所有的组件 vc 看得见 store
+11. 使用流程
+12. 安装了 vuex
+    - 默认安装的是 vuex4，需要指定安装 vue2 对应的 vuex3
+    - `npm install --save vuex@3`
+13. use 插件库
+    - main.js 中引入，并 use
+    - `import Vuex from 'vuex'`
+    - `Vue.use(Vuex)`
+14. store
+    - 上述两步之后，每个 vc、vm 上就有了 store
+    - `new Vue({store:"hello"})`new Vue 实例的时候指定 store
+15. 所有组件都看到 store
+    - 之后就有了$store 对象
+16. 项目里面的 store 就相当于看到 vuex
+17. 在 store/index.js 里面定义 actions、mutations、state，要 new 一个 store，通过 `new Vuex.Store({})`来 new 一个 store，并 export
+    - 在 main.js 和 store/index.js 两个文件里面都要`import Vuex from 'vuex'`
+    - 在 store/index.js 创建了 store 实例之后，在 main.js 中引入
+      `import store from './store/index`可以不指定/index，写`./store`默认就找 index.js
+    - 那么可以直接写 store，不用 store:store
+18. 注意一个顺序：`[vuex] must call Vue.use(Vuex) before creating a store instance`
+    1. store 引入之前要保证已经执行完了
+    2. 所以把`Vue.use(Vuex)`写在`new Vuex.store`前面需要在 index.js 里面，而不是 main.js 里面，因为总会 import 先执行，`Vue.use(Vuex)`在 import 前后都无法影响它后执行，其次还有引入 Vue
+19. 涉及 import 理解
+    1. 无论 import 语句的前后顺序，整个代码中，总是先执行 import
+    2. 之后才会执行其他的
+20. $store 里面有哪些 api
+    1. dispatch
+    2. commit
+    3. state
+21. 模板里面不要写 this，可以看到 vc 上所有东西，要获取 store 里面的数据，要$store.state.xx
+
+# 有了 vue 基础，可以做一些什么案例
+
+1. 简单应用
+   1. TodoList 应用：尝试复现一个简单的 TodoList 应用，用户可以添加、编辑和删除任务项，并标记已完成的任务。
+   2. 博客列表：创建一个简单的博客列表页面，展示博客的标题、摘要和发布日期。
+   3. 电影列表：使用电影 API 获取电影列表，并展示电影的海报、标题和简介。
+   4. 天气应用：使用天气 API 获取实时天气数据，展示当地的天气信息。
+   5. 留言板：实现一个简单的留言板应用，用户可以发布留言和查看已发布的留言。
+   6. Github 用户搜索：使用 Github API 实现一个用户搜索功能，用户可以输入用户名搜索 Github 上的用户信息。
+   7. 倒计时器：创建一个倒计时器应用，用户可以设置倒计时时间并启动倒计时。
+   8. 图片画廊：使用图片素材创建一个图片画廊，实现图片的展示和切换效果。
+   9. 登录和注册页面：实现一个简单的登录和注册页面，包括表单验证和用户登录/注册功能。
+   10. 新闻阅读应用：使用新闻 API 获取新闻列表，并展示新闻的标题和摘要，点击可查看完整内容。
+2. github 开源
+   1. Vue.js 官方文档：Vue.js 官方文档是学习 Vue.js 最好的资源之一。你可以阅读官方文档，并尝试在自己的项目中应用所学的知识。
+   2. Vue Element Admin：这是一个基于 Vue.js 和 Element UI 的后台管理系统模板，提供了很多功能和组件的示例，适合学习如何搭建 Vue.js 的大型应用。
+   3. Vue TodoMVC：这是一个简单的 TodoList 应用，是 TodoMVC 项目的 Vue.js 实现版本。你可以通过这个项目学习 Vue.js 的基本用法和组件交互。
+   4. Vue HackerNews：这是一个基于 Vue.js 和 Vue Router 的仿 Hacker News 的应用，适合学习 Vue Router 和 API 调用。
+   5. Vue Shopping Cart：这是一个简单的购物车应用，适合学习 Vue.js 的状态管理和组件通信。
+   6. Vue Blog：这是一个基于 Vue.js 和 Vuex 的博客应用，适合学习 Vue.js 的状态管理和路由。
+   7. Vue Weather App：这是一个天气应用，使用了 Vue.js 和天气 API 来展示实时天气信息。
+   8. Vue Markdown Editor：这是一个 Markdown 编辑器应用，适合学习 Vue.js 和组件的使用。
+   9. Vue Instagram Clone：这是一个 Instagram 的简单克隆应用，适合学习 Vue.js 和 API 调用。
+   10. Vue RealWorld：这是一个基于 Vue.js 的 RealWorld 应用示例，展示了一个完整的前后端分离项目。
+3. 好看的适合锻炼 css 的参考动画网站
+   1. CodePen：CodePen 是一个社区平台，让开发者可以分享自己的前端代码和作品。你可以在 CodePen 上找到很多精美的 CSS 动画示例，并且可以查看源代码和实时预览效果。
+   2. Awwwards：Awwwards 是一个网站设计奖项平台，展示了许多创意和优秀的网页设计。你可以在 Awwwards 上浏览一些优秀网页设计，其中包含许多令人惊叹的 CSS 动画效果。
+   3. CSS Animation Rocks：CSS Animation Rocks 是一个专门展示 CSS 动画效果的网站，它收集了许多精美的 CSS 动画示例，并提供了代码和演示效果。
+   4. Animista：Animista 是一个在线 CSS 动画生成工具，它提供了很多预设的 CSS 动画样式，你可以在网站上实时预览动画效果，并生成对应的 CSS 代码。
+   5. Hover.css：Hover.css 是一个 CSS 动画库，其中包含了许多精美的鼠标悬停效果。你可以在官网上查看每个效果的演示和代码。
+   6. Animate.css：Animate.css 是另一个常用的 CSS 动画库，它提供了丰富的 CSS 动画效果，可以直接在你的项目中使用。
+   7. CSS3 Animation Cheat Sheet：这是一个 CSS3 动画速查表，展示了各种 CSS3 动画属性和效果，是一个很好的学习参考资料。
+
+# vuex 开发者工具
+
+1. actions 里面可以操作数据，但是不建议，要使用 mutations 修改 state 中的数据，只有 mutations 里面修改 state 数据，开发者工具才能获取到
+2. 解耦，方便其他组件直接调用，复杂的操作全部写在 actions 里面
+
+# store 的 getters
+
+1.
+
+# 怎么设计一个项目-以博客列表为例
+
+1. 设计数据结构：首先，你需要设计博客列表页面所需的数据结构，例如每篇博客的标题、内容、作者、发布日期等信息。可以使用 JavaScript 对象或数组来模拟这些数据。
+2. 创建 Vue 实例：在 Vue.js 中，你可以通过创建 Vue 实例来管理数据和视图。在 Vue 实例中，你可以定义数据、方法、计算属性等。
+3. 安装 Vue Router：使用 Vue Router 可以实现单页应用的路由功能，即在同一个页面中切换不同的组件内容，而不会刷新整个页面。安装 Vue Router 后，你可以在 Vue 实例中配置路由，并为不同的路径指定对应的组件。
+4. 定义路由和组件：在 Vue Router 中，你需要定义路由和对应的组件。例如，你可以定义一个博客列表页面组件和一个单篇博客内容页面组件。然后，在路由配置中指定这些组件与对应的路径关联。
+5. 创建 Vuex Store：Vuex 是 Vue.js 的状态管理库，用于管理应用的共享状态。在博客列表网页中，你可能需要管理一些全局状态，如当前选中的博客、用户登录状态等。通过创建 Vuex Store，你可以定义状态、mutations、actions 等，以便在应用中共享和更新数据。
+6. 实现博客列表页面：根据设计的数据结构和路由配置，你可以实现博客列表页面。在这个页面中，你可以展示所有博客的标题和摘要，点击标题时可以导航到对应的单篇博客内容页面。
+7. 实现单篇博客内容页面：当用户点击博客列表中的某篇博客标题时，应该导航到对应的单篇博客内容页面。在这个页面中，你可以展示完整的博客内容，并根据需要添加一些交互功能。
+8. 添加用户交互：可以在博客列表页面和单篇博客内容页面中添加一些用户交互功能，比如点击加载更多、点赞、评论等。
+9. 连接后端服务：如果你希望从后端获取博客数据，可以使用 Vue.js 的 HTTP 请求库（例如 Axios）来与后端服务进行数据交互。这样，你就可以从后端动态获取博客数据，并实时更新页面内容。
+10. 进一步优化：完成基本功能后，你可以进一步优化博客列表网页的用户体验和性能，例如添加加载动画、分页功能、缓存等。
+
+# vue.js 项目结构怎么搭建？
+
+```
+src/
+|-- assets/           // 存放静态资源，如图片、样式等
+|-- components/       // 存放可复用的组件
+|-- views/            // 存放页面级组件，如路由对应的页面
+|-- router/           // 存放路由相关配置
+|-- store/            // 存放 Vuex 相关的配置
+|-- services/         // 存放与后端交互的服务和 API 请求
+|-- utils/            // 存放工具函数和辅助函数
+|-- App.vue           // 根组件
+|-- main.js           // 项目入口文件
+|-- ...
+```
+
+1. `assets` 目录：用于存放静态资源，如图片、样式、字体等。这些资源可以在组件中引用和使用。
+2. `components` 目录：存放可复用的组件，每个组件可以单独封装特定的功能，并在需要时在不同的页面中引用。
+3. `views` 目录：存放页面级组件，通常与路由对应。每个页面组件包含了页面的布局和结构，可以调用 `components` 目录下的组件来构建页面。
+4. `router` 目录：存放 Vue Router 相关的配置。在这里定义路由表，将路由与页面组件对应起来。
+5. `store` 目录：存放 Vuex 相关的配置。在这里定义全局状态、mutations 和 actions，用于管理应用的状态。
+6. `services` 目录：存放与后端交互的服务和 API 请求。可以在这里封装与后端通信的方法，方便在组件中调用。
+7. `utils` 目录：存放工具函数和辅助函数。这些函数可以在整个项目中共享和复用。
+8. `App.vue` 文件：根组件，包含整个应用的布局和结构。
+9. `main.js` 文件：项目入口文件，用于初始化 Vue 实例并加载根组件。
+10. 根据实际项目的需求，你还可以根据模块功能进一步细分目录结构，例如可以在 `components` 目录下再创建子目录来存放不同类型的组件，如 `components/header` 存放头部组件，`components/sidebar` 存放侧边栏组件等。总体来说，项目结构的划分应该符合项目的规模和复杂度，保持清晰和有序。
+
+# 关于我写博客列表页面
+
+1. 路有对应的组件在 views 里面，怎么引入怎么用？
+   1. 安装 vue-router：`cnpm install --save vue-router`，vue2 对应 vuerouter3 版本
+   2. 通过 Vue Router 来实现路由功能。路由对应的组件可以用来展示不同的页面内容，当用户访问不同的路由时，会加载对应的组件，并在页面中显示该组件的内容
+   3. 要使用路由对应的组件，首先需要在 router/index.js（或其他自定义的路由配置文件）中定义路由表。路由表是一个数组，每个路由对象都包含了路由的路径和对应的组件。
+   4. 在使用路由时，还需要在根组件中挂载 Vue Router。通常是在 main.js 中完成这一步，先引入，后再 Vue 实例中挂载
+   5. 在模板 App.vue 中使用路由对应的组件可以通过 <router-view> 标签来实现。在根组件的模板中添加 <router-view> 标签，该标签会根据当前路由的路径动态渲染对应的组件。
+2. 我想把搜索框动画弄得炫酷一点：https://blog.csdn.net/hktkkkk/article/details/127663718
+3. import Home from "@/views/Home" // 不是说在 Home 下默认找 index.vue 吗，为什么 Home.vue 才能找到？
+4. components 里面的组件，在 views 里面都可以直接用吗？
+   1. 在 Vue 项目中，components 文件夹里的组件可以在 views 文件夹里直接使用，前提是它们都在同一个根目录下，或者通过正确的相对路径进行引用。
+   2. 如果在 App.vue 中引入了 components 里面的组件，并且组件在 App.vue 中被渲染（即在 App.vue 的模板中使用了组件），那么在 Home.vue 中不需要再单独引入组件。
+5. v-for 不要:，要:key
+6. components 里面的组件必须要有具体的 name，全局组件在 main.js 中通过 Vue.component()注册
+   1. 在 Vue 项目中，头部和尾部通常是被视为全局组件，因为它们会在多个页面中共享和复用。所以，通常将头部和尾部组件放在 components 文件夹下，并且在主入口文件（通常是 main.js）中注册为全局组件，这样在整个应用中都可以使用它们。
+   2. 另一种！所有页面都要用到的，结构直接写在 App.vue 中
+7. 想用 v-for 生成列表，a 标签包裹的 li 标签，如何实现路由跳转
+   1. 将<router-link>放在 v-for 循环内部，并使用动态路由参数来实现不同路由的跳转。
+   2. ul 里面放 li 标签，v-for 和:key 仍然放在 li 标签上，router-link 标签放在 li 标签里面，要写上 to 属性，用:to 因为不同的 li 跳转不同的路由
+   3. 当 router-link 的 to 属性值以 http://或 https://开头时，会被识别为外部链接。如果 to 属性值是一个字符串，Vue Router 会自动将其解析为外部链接。但如果是一个路由路径，需要手动添加/或./前缀来确保其被正确解析为路由路径。
+8. vueRouter 的 to 属性要怎么设置？
+   1. <router-link> 的 to 属性被设置为 /blog，而不是完整的路径。这导致点击博客时，<router-link> 会认为 /blog 是相对于当前路由路径的相对路径，然后拼接在当前路径的后面，导致了链接错误。
+   2. http://localhost:8080/#/blog 这个才是正确的地址，但是却跳转到了 http://localhost:8080/blog#/home
+9. 把 BlogFooter 和 BlogHeader 只在 App.vue 中导入注册使用，其他子组件理应直接使用，但是 router-link 中的 Blog 使用为什么报错？
+   1. 果然需要注册成全局组件才行
+   2. 在 main.js 中注册
