@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="root">
     </div>
 </template>
 
@@ -10,6 +10,8 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="css">
+    div.root{
+        background-color: #09203f;
+    }
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="container">
         <!-- 写在components里面的可以直接用 -->
         <Search/>
         <BlogList/>
@@ -21,6 +21,6 @@ export default {
 }
 </script>
 
-<style>
+<style scoped lang="css">
 
 </style>

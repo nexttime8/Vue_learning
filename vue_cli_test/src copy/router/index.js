@@ -14,18 +14,22 @@ export default new VueRouter({
   routes: [
     {
       path: "/home",
+      name: "Home",
       component: Home, // 这里不要引号也不要大括号
     },
     {
       path: "/tag",
+      name: "Tag",
       component: Tag,
     },
     {
       path: "/blog",
+      name: "Blog",
       component: Blog,
     },
     {
       path: "/about",
+      name: "About",
       component: About,
     },
     {

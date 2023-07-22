@@ -1,30 +1,29 @@
 <template>
   <div class="container">
-    <h1>所有文章</h1>
+    <h2>所有文章</h2>
     <div class="box">
-    <h2>BPVANK SYSTEM</h2>
-    <div class="inputBox">
-      <input type="text" required="required">
-      <span>username or email</span>
+      <div class="inputBox">
+        <input type="text" required="required" title="">
+        <span>请输入关键字</span>
+      </div>
+      <!-- <div class="inputBox">
+        <input type="password" required="required">
+        <span>password</span>
+      </div> -->
+      <div class="buttonBox">
+        <button>Search</button>
+      </div>
     </div>
-    <div class="inputBox">
-      <input type="password" required="required">
-      <span>password</span>
-    </div>
-    <div class="buttonBox">
-      <button>LOGIN</button>
-    </div>
-  </div>
   </div>
 </template>
 
 <script>
 export default {
-
+  name:"Search"
 }
 </script>
 
-<style lang="css">
+<style lang="css" scoped>
     /* 清除内、外间距 */
 * {
   margin: 0;
@@ -32,30 +31,36 @@ export default {
   /* 添加内间距不扩大div */
   box-sizing: border-box;
 }
- 
+
+.container{
+  float: left;
+  padding-left: 120px;
+}
+
 .box {
-  height: 100vh;
-  background: #09203f;
+  height: 15vh;
   display: flex;
   /* 垂直居中 */
   justify-content: center;
   /* 水平居中 */
   align-items: center;
   /* 纵向排列 */
-  flex-direction: column;
+  /* flex-direction: column; */
   /* 无法选中文字 */
   user-select: none;
-  /* 元素之间的上下间距 */
+  /* 元素之间的间距 */
   gap: 20px;
 }
- 
-.box h2 {
-  color: white;
+
+h2{
+  font-family: 'Franklin Gothic Medium','Roboto', 'Lato' ,'Arial Narrow', Arial, serif;
+  font-weight: 700;
+  color: #50c9c3;
 }
  
 .inputBox {
   position: relative;
-  width: 300px;
+  width: 80vh;
 }
  
 .inputBox input {
@@ -117,6 +122,7 @@ export default {
   color: rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.5);
   font-weight: 600;
+  cursor: pointer;
 }
  
 .buttonBox button:hover {

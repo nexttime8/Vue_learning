@@ -1,19 +1,19 @@
 import Vue from "vue"
 import App from "@/App.vue"
 
-import router from "@/router"
-
-import BlogHeader from "@/components/BlogHeader"
-import BlogFooter from "@/components/BlogFooter"
-
-Vue.component(BlogHeader.name, BlogHeader)
-Vue.component(BlogFooter.name, BlogFooter)
+import store from "@/store"
 
 Vue.config.productionTip = false
 
+import { gsap } from "gsap"
+import imagesLoaded from "imagesloaded"
+
+Vue.use(gsap)
+Vue.use(imagesLoaded)
+
 new Vue({
   name: "#app",
-  router,
+  store,
   render: (h) => h(App),
   beforeCreate() {
     Vue.prototype.$bus = this

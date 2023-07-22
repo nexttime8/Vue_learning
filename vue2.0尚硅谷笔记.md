@@ -1708,3 +1708,11 @@ src/
 9. 把 BlogFooter 和 BlogHeader 只在 App.vue 中导入注册使用，其他子组件理应直接使用，但是 router-link 中的 Blog 使用为什么报错？
    1. 果然需要注册成全局组件才行
    2. 在 main.js 中注册
+10. sass-loader 版本问题
+11. 使用 Vue 的 ref 获取 DOM 元素时，需要在 Vue 实例中确保 DOM 元素已经渲染完成
+
+# store 的 getters
+
+1. 跨组件实现对 data 数据的复杂运算
+2. 很像计算属性，写在 store 里面，像 actions、state 等写法，getters 里面
+3. state 类似于共享的 data，getters 类似于共享的 computed

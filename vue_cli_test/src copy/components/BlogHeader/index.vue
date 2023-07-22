@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h1>所有博客</h1>
+        <h1>学习分享站</h1>
         <ul>
            <li v-for="nav in navs" :key="nav.name">
                 <router-link v-if="nav.isRoute" :to="nav.to">{{ nav.name }}</router-link>
@@ -64,8 +64,9 @@ export default {
         justify-content: space-around;
     }
     
-    h1,li{
+    h1,a{
         font-family: 'Franklin Gothic Medium','Roboto', 'Lato' ,'Arial Narrow', Arial, serif;
+        color: aquamarine;
     }
 
     h1{
@@ -90,5 +91,13 @@ export default {
         cursor: pointer;
         font-weight: 600;
         font-size: large;
+    }
+
+    a{
+        text-decoration: none;
+    }
+
+    router-link:hover,a:hover{
+        color: #50c9c3;
     }
 </style>
