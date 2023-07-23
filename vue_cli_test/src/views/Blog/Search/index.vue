@@ -34,22 +34,18 @@ export default {
 
 .container{
   float: left;
-  padding-left: 120px;
+  /* padding-left: 7.5rem; */
 }
 
 .box {
   height: 15vh;
   display: flex;
-  /* 垂直居中 */
-  justify-content: center;
-  /* 水平居中 */
+  /* justify-content: center; */
   align-items: center;
-  /* 纵向排列 */
-  /* flex-direction: column; */
   /* 无法选中文字 */
   user-select: none;
   /* 元素之间的间距 */
-  gap: 20px;
+  gap: 1.25rem;
 }
 
 h2{
@@ -65,10 +61,10 @@ h2{
  
 .inputBox input {
   width: 100%;
-  padding: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 0.9375rem;
+  border: 0.0625rem solid rgba(255, 255, 255, 0.5);
   background: none;
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   outline: none;
   color: white;
   font-size: 1em;
@@ -79,7 +75,7 @@ h2{
 .inputBox span {
   position: absolute;
   left: 0;
-  padding: 15px;
+  padding: 0.9375rem;
   /* 元素永远不会成为鼠标事件的target（目标） */
   pointer-events: none;
   font-size: 1em;
@@ -94,9 +90,9 @@ h2{
 .inputBox input:focus~span {
   color: #50c9c3;
   /* 变换位置 */
-  transform: translateX(15px) translateY(-7px);
+  transform: translateX(0.9375rem) translateY(-0.4375rem);
   font-size: 0.65em;
-  padding: 0 5px;
+  padding: 0 0.3125rem;
   background: #09203f;
   letter-spacing: 0.1em;
    
@@ -110,23 +106,23 @@ h2{
  
 .inputBox input:valid,
 .inputBox input:focus {
-  border: 1px solid #50c9c3;
+  border: 0.0625rem solid #50c9c3;
 }
  
 /* 给按钮写样式 */
 .buttonBox button {
-  padding: 10px 30px;
-  border-radius: 5px;
+  padding: 0.0625rem 1.875rem;
+  border-radius: 0.3125rem;
   background: none;
   font-size: 1em;
   color: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 0.0625rem solid rgba(255, 255, 255, 0.5);
   font-weight: 600;
   cursor: pointer;
 }
  
 .buttonBox button:hover {
   color: #50c9c3;
-  border: 1px solid #50c9c3;
+  border: 0.0625rem solid #50c9c3;
 }
 </style>

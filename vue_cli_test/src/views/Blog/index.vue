@@ -22,5 +22,7 @@ export default {
 </script>
 
 <style scoped lang="css">
-
+    .container {
+        height: 100%;
+    }
 </style>

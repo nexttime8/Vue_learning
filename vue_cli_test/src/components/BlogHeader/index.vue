@@ -57,37 +57,45 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="css">
 
     .container {
+        height: 4.5rem; /* 只在这里加一个高度，效果就都出现了 */
+        width: 70rem;
         display: flex;
         justify-content: space-around;
+        position:sticky;
+        top:0;
     }
     
-    h1,a{
-        font-family: 'Franklin Gothic Medium','Roboto', 'Lato' ,'Arial Narrow', Arial, serif;
+    a{
+        font-size: 1.25rem;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: aquamarine;
     }
 
     h1{
+        font-family: 'Franklin Gothic Medium','Roboto', 'Lato' ,'Arial Narrow', Arial, serif;
         font-weight: 700;
+        color: aquamarine;
     }
 
     ul {
         display: inline-flex;
         float: left;
         list-style: none;
-        margin-top: 30px;
+        margin-top: 1.875rem;
         padding-left: 0;
     }
 
     li:before {
-        content: "🤍"; /* 使用自定义符号，可以是字体图标或其他Unicode字符 */
-        margin-right: 4px;
+        content: "☈"; /* 使用自定义符号，可以是字体图标或其他Unicode字符 */
+        margin-right: 0.25rem;
+        color: #50c9c3;
     }
 
     li{
-        margin-left: 20px;
+        margin-left: 1.25rem;
         cursor: pointer;
         font-weight: 600;
         font-size: large;
