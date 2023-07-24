@@ -29,7 +29,7 @@ export default {
 }
 
 body {
-  width: 100%;
+  width: 100vh;
   height: 100vh;
   display: flex;
   justify-content: center;
