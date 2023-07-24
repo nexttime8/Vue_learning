@@ -1716,3 +1716,155 @@ src/
 1. 跨组件实现对 data 数据的复杂运算
 2. 很像计算属性，写在 store 里面，像 actions、state 等写法，getters 里面
 3. state 类似于共享的 data，getters 类似于共享的 computed
+
+# map
+
+1. 因为要获取 store 里面的 state，每次都要写复杂的$store.state.xxx，考虑在 computed 里面写，return，但是还是很冗余累赘，用到了`import {mapState} from vuex`；通过`...mapState({xxx:'yyy'})`或者`...mapState(['yyy'])`两种方式，直接可以实现；这两种方式是对象和数组两种方式
+2. 同时还有 mapMutations、mapActions、mapGetters，对象方法和数组方法都一样
+   1. mapState 可以将 state 中的数据映射成计算属性
+   2. mapGetters 将 getters 里面的数据映射成计算属性
+   3. mapActions 与 actions 对话，即包含 dispatch 的函数
+   4. mapMutations 与 mutations 对话，即包含 commit 的函数
+3. 特别的，注意要用到 data 里面的参数，不能直接传递过去，要通过函数参数的形式传递，用的时候传进去
+4. 模块化，是在哪个 index.js 中写成`{modules:{}}`而不是`{state,mutations,actions}`的形式，同时在各个 options 里面声明`namespaced:true`
+5. 模块化编码，需要在 mapState 里面指定两个参数，分别是字符串形式模块名，和数组或对象指定
+6. 注意如果自己直接读取模块化的形式，除了 state，都需要用/斜杠的形式，dispatch 和 commit 自然是传入两个参数，而 getters 则不同，因为要点一个字符串，所以要写成['']的形式
+
+# vue-cli
+
+1. VueCli 命名规范要求创建 Vue 项目全小写字母
+
+# vue-router
+
+1. 安装 vue-router3 对应 vue2，同样 vue-cli3 对应 vue2
+2. vue-router 和 vuex 都是插件，需要 use
+3. 都要使用，分别是 router 和 store，在 vm 实例中写
+4. active-class 属性
+5. 路由切换，组件会被频繁销毁和挂载
+6. 多级路由|嵌套路由，一级路由和二级路由，在一级路由里面写二级路由，`children:{path:'',component:xxx}`，二级路由里面的 path 不要写/斜杠；二级路由的 router-link 里面的 to 要带上父亲的路由路径`'/home/news'`
+7. 路由传参 query 参数，?后面，通过`this.$route.xx`
+   1. 字符串写法：`:to=双引号里面写模板字符串同时${}传变量`
+   2. 对象写法：`:to={path:'',query:{}}`
+8. 命名路由，在 routes 定义的{}里面写一个 name 属性，和 path、component 同级
+   1. 在 to 的对象写法中，直接不写 path 一个复杂的路径，直接`:to={name:'一个名字'}`
+   2. 不写字符串写法了，要写成对象的形式
+9. 路由传参 params 参数
+   1. 在 routes 的 path 里面指定 params 参数，写成`path:'detail/:id/:title'`的形式，执行 id 和 title 两个 params 参数，是占位符，指定接收参数；使用的时候就是`/xx/yy/detail/id值/title值`的形式传入
+   2. 传递 params 参数只能写 name，不能写 path
+10. 简便写法，避免写`$route.params.xxx`的前缀
+    1. 之前学过组件的 props
+    2. 现在也是 props，也是和 name、path、component 同级的，用于传递
+       1. 对象写法
+       2. 布尔值写法，`props:true`，将路由组件接受的所有 params 参数，以 props 形式传过去，接收的那边直接是 params 的'参数名'
+       3. 函数写法，`props($route或者{query:{id,title}}){return {id:$route.query.id}}`，解构赋值
+    3. 之后在 export default 里面写`props:['']`，用于接收
+
+# 路由对浏览器历史记录的影响
+
+1. 栈结构
+2. push 和 replace，默认 push，replace 是替换栈顶
+   1. 给 router-link 标签添加 replace 属性，替换成 replace 模式
+3. 前进和后退是指针跳转
+
+# 编程式路由导航
+
+1. 声明式路由导航是要用 router-link 标签，本质是 a 标签，当点击其他标签需要进行路由跳转的时候，就不能使用；或者等一段时间自动跳转也不能用 router-link 标签；编程式路由可以实行一定的业务逻辑
+2. this.$router能够真正的跳转，this.$route 是存数据
+   1. push 方法和 replace 方法
+   2. push 方法传递对象作为参数
+3. this.$router 上面的方法
+   1. back 方法后退
+   2. forward 方法前进
+   3. go 方法跳转，传递数组，正数连续前进几步，负数连续后退几步
+
+# 缓存路由组件
+
+1. 因为组件之间切换会销毁和挂载，所以需要缓存
+2. 把 router-view 组件标签放到 keep-alive 标签里面，只要在 router-view 这个区域的组件都会被缓存；设置属性`include="组件名称"`指定特定的组件进行缓存
+3. mounted 里面开启的定时器，要在 beforeDestroy 里面关掉
+4. 又想缓存组件中的数据，又想关闭掉组件中的定时器，要用到组件中的生命周期钩子
+   1. actived 和 deactived 函数，分别在切来和切走的时候调用
+   2. 把原来在 mounted 里面的写道 actived 里面，beforeDestroy 的写道 deactived 里面
+   3. 还有一个生命周期钩子，nextTick，`this.$nextTick()`，修改了数据、操作了 dom、把真实 dom 放入页面之后，才会调用这个钩子
+
+# 全局路由守卫
+
+1. 设置路由器规则，new VueRouter 实例，调用 beforeEach 方法，全局 前置 路由守卫，切换之前调用|初始化时被调用
+2. beforeEach 方法里面的参数是一个回调函数，回调函数接收三个参数，分别是 to、from 和 next，初始化时没有什么意义，切换之前有意义
+   1. to 和 from 有 name、path、fullPath 、hash、meta、query 等属性
+3. next 是一个函数，调用就切换，实现一定的业务逻辑判断
+4. 在每一个路由里面标识是否需要进行路由权限校验，`routes:[{name:'',path:'',component:xx,children:[]}]`添加属性
+   1. 本身路由配置里面只有 fullPath、hash、matched、meta、name、params、path、query
+   2. 往 meta 里面放自己想放的东西，meta 路由源信息，`meta:{isAuth:true}`
+5. beforeEach 是前置路由设备，afterEach 是后置路由设备，afterEach，全局 后置 路由守卫，初始化时被调用|切换之后被调用
+   1. 后置路由守卫没有 next，只有 to 和 from
+   2. afterEach 可以实现修改网页标签的标题功能，`document.title=''`，将 meta 里面的信息传入，可以不用在判断逻辑里面写这些操作，无论判断逻辑的哪一种情况，都会执行
+
+# 学 vue3 之前，动手实践，直接用 vue-cli 新创建的项目实现
+
+1. getters 同步 state 里面的数据更新，加一些 state 数据基础上的处理逻辑 ✔
+2. 用 nanoid 添加 id，用免费 api 生成随机数据，用免费 api，在 actions 里面发请求 ✔
+3. router-link 和 router-view 两种标签 ✔
+4. vuex 里面的 map 使用，简化调用$store 里面的操作，包括 state、actions、mutations 和 getters ✔
+5. 实现模块化编码，不同的模块用不同的 js 文件，配置不同的路由，namespaced ✔
+6. 配置多级嵌套路由，控制信息缓存，传递 params 和 query 参数，name 属性，多种传参数的方法 ✔
+7. 命名路由，命名路由只能传递 params 参数，name 和 params 组合，path 和 query 组合 ✔
+8. 浏览器记录前进后退，编程式跳转，push 和 replace 两种模式，back、forward 和 go 三种方法进行跳转 ✔
+   - router 上面哦，只有 router 上面才能执行操作，route 只是存数据
+9. router-link 标签的 active-class 属性 ✔
+10. 三种生命周期钩子，actived、deactived 和 nextTick，activated 用来开启定时器，deactived 用来关闭定时器 ✔
+11. 浏览器缓存路由组件，用 keep-alive 标签，include 指定被缓存，是用来包裹 router-view 标签的 ✔❓
+12. 指定一些跳转的规则，beforeEach 和 afterEach 方法，to、from 和 next 参数，以及里面的一些属性，在整个 index.js 的外层写 `router.beforeEach(()=>{})`，全局前置路由守卫用于权限判断，后置用于 title 设置
+
+- to 和 from 相当于一个组件的路由，上面有配置的一些 meta 等
+
+# 上述实践出现的问题
+
+1. Vuex 必须要在 store/index.js 中引入并使用，而不是 main.js 中，之前解释过这个问题，其中 index.js 必须通过 Vuex.Store 来创建实例，就必须要有 Vuex
+   1. 注意一个顺序：`[vuex] must call Vue.use(Vuex) before creating a store instance`
+      1. store 引入之前要保证已经执行完了
+      2. 所以把`Vue.use(Vuex)`写在`new Vuex.store`前面需要在 index.js 里面，而不是 main.js 里面，因为总会 import 先执行，`Vue.use(Vuex)`在 import 前后都无法影响它后执行，其次还有引入 Vue
+   2. 涉及 import 理解
+      1. 无论 import 语句的前后顺序，整个代码中，总是先执行 import
+      2. 之后才会执行其他的
+   3. 不能在 main.js 中来引入 Vuex 和注册；VueRouter 同理
+      ```js
+      import Vuex from "vuex"
+      Vue.use(Vuex) // 看似在引入store之前进行Vuex的注册，但是import语句总是在use Vuex之前执行，导致store还没有执行完毕，就先引入，因此报错
+      import store from "@/store"
+      ```
+2. 一些细节错误
+   1. store 里面的配置项都是小写，mutations 和 actions
+   2. mutations 里面的函数，固定两个参数，分别是上下文 context，里面有 state 里面的数据，和 commit 传过来的参数
+3. 一些问题
+   1. 路由跳转为什么要进行传参？query 和 params？——
+   2. mutations 里面的函数的第一个参数存在的意义？——mini 版 state
+   3. 是不是还没解决除了点击 a 标签以外的路由跳转？
+4. 写了 mapMutations 之后，不需要手动 commit 了，但是仍然需要调用 mutations 里面的函数
+   1. 注意 mapState 和 mapGetters 是写在 computed 里面，而 mapMutations 和 mapActions 是写在 methods 里面
+5. 想对 router-link 标签添加样式，需要写 a 标签
+6. 如何获取接口里面的数据？
+   1. 一般复杂的逻辑，和需要异步请求都写在 actions 里面
+   2. 要安装并引入 axios，通过`axios.get().then()`实现
+7. 通过双向绑定获取的 input 的 value 值，在哪里清空？actions 里面？methods 里面？
+   - 不直接给 button 绑定 store 里面传过来的 methods 里面的方法，而是叠加调用，创建一个 addInfoHandler 方法，先调用传过来的方法，在进行 value 的清空操作
+8. 为什么只要在 index.js 文件中不传 params 参数，不占位/:id/:title，就接收不到数据或者说无法更新数据？而且也会同时 active
+9. 添加了 keep-alive，为什么还是不能缓存？
+   - 因为我设置输入框的数据是响应式的 v-model，导致每次组件被销毁后重新初始化
+   - 将输入框的数据设置为非响应式的，设置为`:value="value"`
+   - 并添加 input 的事件绑定
+10. 路由的 props，三种方式，分别是对象、布尔值和函数，都是在路由配置的时候写，在组件中用 props 接收，也主要是为了传递 query 和 params 参数，布尔值为 true 传 params
+11. 缓存组件路由没有实现 ✔
+    1. ！！！！终于知道为什么了
+    2. 要保证两个地方的 name 一致
+    3. 分别是组件实例的 name（eslint 要求必须有 mutiple word 组成）、include=['']里面的一致，实际上，路由声明里有没有 name 都为无所谓
+12. 只有被包裹在 keep-alive 里面的组件，才能使用 activated 和 deactivated 钩子
+13. 完全不懂为什么 beforeDestroy 和 mounted 会被反复触发，而 activated 和 deactivated 钩子不会 ✔
+    - beforeDestroy 和 mounted 钩子函数，这两个钩子函数在组件被销毁和重新创建时会触发，但它们不会受到 <keep-alive> 的影响，无论组件是否被缓存，每次组件被销毁和重新创建时都会触发这两个钩子函数。
+
+# 几种不同的路由守卫
+
+1. 全局路由守卫写在 index.js 的路由配置文件里面的最外层，和 export 同级，因为是全局的，所以写在整体；独享路由守卫写在 index.js 的路由配置文件的对应路由的配置项里面，和 name、path 等同级，键值对新的形式`beforeEnter:()=>{}`；组件内路由守卫，写在组件里面，和 name、data 等同级，`beforeRouteEnter(){}`，通过路由规则进入和离开组件时被调用
+2. 只有全局才存在前后之说，理解组件激活和进入组件？区分通过路由规则进入和直接进入
+
+# history 模式和 hash 模式
