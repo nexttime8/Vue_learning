@@ -1868,3 +1868,104 @@ src/
 2. 只有全局才存在前后之说，理解组件激活和进入组件？区分通过路由规则进入和直接进入
 
 # history 模式和 hash 模式
+
+1. 路径里面的#及其后面的是哈希，不会随着 http 请求发送给服务器，兼容性好
+   - 若降低至通过第三方手机 app 分享，若 app 校验严格，则地址会被标记为不合法
+2. 默认是哈希工作模式，通过`mode:'history'`在路由配置里面更换为 history 模式，兼容性略差
+3. .map 是啥？看 webpack 课程
+4. dist 交给服务器，经过部署，用 nodejs+express 框架写服务端代码
+5. 步骤
+   1. npm init，写包名，就会出现 package.json 和 package-lock.json 两个文件
+   2. 创建 server.js 文件，不是 js 的模块化，用 commonjs 模块化
+   3. 怎么将静态资源放到服务器上？
+   4. index.html 默认找，放在 static 文件夹
+   5. node server 启动服务器
+6. 刷新就废？
+   - 后面的路径就会发起请求
+   - history 模式解决 404 问题
+     1. connect-history-api-fallback 中间件 npmjs.com/package/connect-api-fallback
+     2. 在将静态资源之前使用之前使用
+     3. 需要后端支持
+
+# 复习 vue 框架的前置知识
+
+1. ES6 语法规范（解构赋值、模板字符串、箭头函数）
+2. ES6 模块化（默认暴露、分别暴露、统一暴露、import?、sport?）
+3. 包管理器（npm、yarn、cnpm）
+4. 原型、原型链（重点）
+5. 数组常用方法（过滤、加工、筛选最值）
+6. axios
+7. promise
+
+# VueUI 组件库
+
+1. 移动端
+   1. vant
+   2. cube ui
+   3. mint ui
+2. PC 端
+   1. 饿了么 element ui
+   2. iview ui
+3. react-ant design 组件库
+   - 还有 ant design for vue
+4. 京东 nutui
+   1. 按钮设计 京东风格 辨识度很强
+5. 高度定制化 ui 不适合使用风格化很强的 ui 库
+6. 你用组件库，首先就要知道
+   1. 组件库基于哪个框架
+   2. pc 端还是移动端
+7. 不要死记硬背，直接参考官方文档
+   1. 看快速上手，是一个插件库
+   2. 全部引入 element-ui 和 element-ui/lib/theme-chalk/index.css
+      - 全部都注册成全局组件了！
+   3. 是一个插件，use
+8. vue-cli 里面用到了 webpack📍
+9. element-ui 按需引入
+   1. 不直接 Vue.use()，把上面两个引入都删掉
+   2. 安装 babel-plugin-component，-D 开发依赖
+      - `npm install babel-plugin-component -D`
+   3. .babelrc 文件 现在是 babel.config.js
+      - 追加 presets、plugins
+   4. 引入部分组件，通过 `import {xx,yy} from 'element-ui'
+      - 自动引入对应的样式
+   5. 通过`Vue.component(xx.name,xx)`注册全局组件
+      - 第一个参数是自己在自己的代码中用的名字，自由设置
+   6. es2015？×，@babel/preset-env
+10. 没事就看看组件库官方文档，不需要非去写
+
+# vue3 ！！
+
+1. RFC 请求修改意见稿
+2. tags 地址，发行版本
+3. 源码升级
+   1. proxy 代替 defineProperty
+   2. 重写虚拟 dom 实现和 tree shaking（webpack 本身就支持 tree shaking
+4. 更好的支持 typescript，微软出的，非常简易学，强类型语言，ts+vue3 尚硅谷
+5. 新特性
+   1. composition api
+      - setup 配置
+      - ref 和 reactive
+      - watch 和 watchEffect
+      - provide 和 inject
+      - ...
+   2. 新的内置组件
+      - fragment
+      - teleprot
+      - suspense
+   3. 其他改变
+      - 新的生命周期钩子
+      - data 选项应始终被声明为函数
+      - 移除 keyCode 支持作为 v-on 的修饰符
+        - .13 不推荐
+      - ...
+
+# 创建 vue3 工程
+
+1. 要求 vue-cli 在 4.5.0 以上
+   - vue -V 和 vue --version 查看
+2. 升级 vue-cli
+   - npm install --g @vue/cli
+3. 创建
+   - vue create 小写
+   - 选择 vue3
+4.
