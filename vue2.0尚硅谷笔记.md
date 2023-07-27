@@ -1968,4 +1968,144 @@ src/
 3. 创建
    - vue create 小写
    - 选择 vue3
-4.
+4. 报错解决
+   1. ERROR Error: @vitejs/plugin-vue requires vue (>=3.2.13) or @vue/compiler-sfc to be present in the dependency tree.
+      - `npm install @vue/compiler-sfc`仍然报错
+      - 重装 node_modules 仍然报错
+      - 一个个安装vue@3.12.3、@vue/compiler-sfc 和 vue-loader
+      - 反正是安装完 3.12.3 之后解决问题的
+5. vite 新一代前端构建工具，尤雨溪团队打造
+   - grunt-glup-webpack-vite
+   - 开发环境中无需打包，可快速冷启动
+   - 轻量快速热重载
+   - 按需编译，不再等待整个应用编译完成
+     - npm run serve 每次等待的过程就是 webpack 打包
+6. vite 创建 vue3 工程的步骤
+   1. npm init vite-app xxxname
+   2. cd
+   3. npm i
+   4. npm run dev
+
+# 入门 vue3
+
+1. 引入 createApp 工厂函数，{}分别暴露这样引入函数，直接用这个函数调用，不需要 new
+   - 不向下兼容
+2. mixin 忘了，这个应用实例对象更轻量
+3. template 可以没有根标签
+4. vue3 的开发者工具
+
+# 常见组合式 api
+
+1. setup 配置项
+   1. 是一个函数，两种返回值，返回值属性、方法在模板中可以直接使用，返回值渲染函数
+   2. 渲染函数是 h，引入 h，分别暴露，vue 中引入，`return ()=>h('h1','h1中的文本')`
+   3. setup 不能是 async 函数
+   4. data、methods 在 vue3 中能用，向下兼容，vue2 配置的能读取 vue3 配置的，反之不行，2、3 冲突以 3 为主
+2. ref 函数
+   1. 引入 ref，实现响应式，赋值的等式右边`ref(具体值)`，本质是一个 reference implement 实例对象，值存在 value 里面，有一个 proto 里面都有 getter 和 setter
+      - 模板里面自动取值，不需要.value，函数里面使用要 value
+      - 如果不是简单数据类型（`Object.defineProperty`），如对象就要`obj.value.property`，内层的属性不需要 value 了，不是数据劫持方式，而是 Proxy，proxy 是 window 自带的，es6 中的新东西
+   2. 内部基于 vue3 的新函数-reactive 函数
+3. reactive 函数
+   1. 对象类型响应式数据，基本类型用 ref
+   2. reactive 传入对象，生成直接就是 Proxy
+   3. 深度监视
+      - 数组直接通过索引值改，响应式，vue2 可不行
+   4. 直接最后所有的数据交给 reactive
+      1. 但是最后都要 reactive 的哪个实例来点
+
+# vue3 响应式原理
+
+1. （回顾 vue2）了解一下 vue2 的源码，数组的七种方法的封装，因为实现了两个操作一个是原生操作，另一个是更新页面（面试问 vue2 和 vue3 区别）
+   - 存在问题，新增.删除 delete 数据，界面不会更新；数组下标修改，界面不会自动更新
+   - 新增可以通过`Vue.$set(obj,key,value)`或者`Vue.set()`添加属性，`this.$delete`删除，同时监测到
+   - 请掌握 splice 方法
+2. vue3 新增和删除属性都是响应式的（因为 reactive）；数组下标修改，界面会自动更新
+3. 模拟 vue2 的响应式
+   1. getter
+   2. setter
+   3. configurable:true，有这个才能 delete
+4. 模拟 Vue3 的响应式——增删改查
+   1. window.Proxy，意味着 Proxy 可以直接使用，`new Proxy(xx,{})`，xx 是传入的对象
+   2. 还是要在上面的空对象里面写 getter、setter
+      1. get 会得到两个参数，分别是 target（传入的对象）、propertyKey（读取的对象属性名）
+         - 要在里面返回，直接返回值
+      2. set 会得到三个参数，分别是 target、propertyKey、propertyValue
+         - propertyKey 是字符串，所以要通过`target[propertyKey]=propertyValue`来修改
+         - 要在里面设置值
+         - 在新增和修改的时候都会调用
+      3. 删除 deleteProperty 会得到两个参数，分别是 target、propertyKey
+         - 要在函数里面 delete
+         - 要在函数里面写 boolean 返回值，因此直接返回 delete 值
+      4. Reflect.get()、Reflect.set()、Reflect.deleteProperty()
+         1. Object.deleteProperty 实现 set 重名报错，不好捕获错误，需要 try-catch；Reflect.deleteProperty 实现 set 重名不报错，以前面的优先，会以 boolean 值返回说明 set 是否成功
+
+![Alt text](./images/image-18.png) ![Alt text](./images/image-19.png) ![Alt text](./images/image-20.png)!
+
+# vue 响应式
+
+1. 模拟 vue2 的响应式
+   1. 用`Object.defineProperty()`方法
+   2. 第一个参数是属性所在对象
+   3. 第二个参数是属性
+   4. 第三个参数是对象
+      1. 其中包含 get 方法，要有返回值
+      2. 和 set 方法，要有值传入，要进行属性的值设置
+   5. getter 和 setter 发现不了属性的增、删
+      1. 要在对象里面写`configurable:true`，就可以增删，但是并不是响应式的
+2. vue3 的响应式？
+   1. Proxy 对象，用`new Proxy()`方法，返回的也是一个对象 target，和传入的一样
+      - 返回的那个对象上的属性进行增删改，都能捕获到，传入的那个对象会有对应的更改
+   2. 第一个参数是所指对象
+   3. 第二个参数是一个配置对象，可以为空对象
+      1. 其中包括 get 方法，要有返回值
+         - 接收两个参数，第一参数是 target，第二个参数是读的那个 propName
+      2. 和 set 方法，要有值传入，要进行属性的值设置
+         - 接收三个参数，第一参数是 target，第二个参数是改的那个 propName，第三个参数是改的那个属性值
+         - 记得通过`target[propName]=propValue`
+         - set 方法，在修改和追加的时候都会调用
+      3. 还要包括 deleteProperty 方法
+         - 接收两个参数，第一个参数是 target，第二个参数是 propName
+         - 记得`delete target[propName]`，还要将其返回
+3. 真 vue3 的响应式-简版
+   1. 对对象的属性？`window.Reflect()`
+      1. 可以读，`Reflect.get(obj,'propName')`
+      2. 可以写，`Reflect.set(obj,'propName','propValue')`
+      3. 可以删，`Reflect.deleteProperty(obj,'propName')`
+   2. ECMA 把 Object 上面的 api 添加到 Reflect 上，为什么？
+      1. 通过`Object.defineProperty(target,'propName',{get(){},set(val){}})`添加属性，重名会报错，需要捕获
+      2. 但是`Reflect.defineProperty(obj,'propName','propValue')`添加属性不会报错，会有返回值知道是否正确执行
+4. 所以要看源码～～看 MDN ～～
+   1. Proxy
+   2. Reflect
+5. ref 和 reactive
+   1. [Alt text](./images/image-21.JPG)
+   2. 把所有的数据都作为参数合并为对象，传入到 reactive 里面
+   3. reactive 和 ref 都要导入，`import {rective,ref} from 'vue'`
+   4. ref 生成的是普通数据，reactive 生成的是响应式数据，都是函数参数传入
+6. vue2 中如果组件标签传过来的值没有通过 props 接收，在$attrs 里面也是有的
+   1. 不过这样不能对类型进行限定，props 是可以先定类型的
+   2. $attrs 只有 props 里面没接收的那些值
+7. vue2 中如果组件标签里面传过来了标签，但是子组件没有用插槽接收，在$slots 里面也是有的，是 default 的
+   1. 具名插槽：组件标签里面，要写 template 标签，指定 slot 属性
+   2. 两种指定具名插槽的形式：`slot="name"`和`v-slot:name`，后者更推荐
+8. vue3 的 setup 注意点
+   1. 在 beforeCreate 里面执行一次，this 是 undefined
+   2. setup 参数：第一个是 props（给组件标签添加的属性）是 proxy 对象（能响应式），第二个是 context（上下文，是一个对象，有 attrs、emit、slots）
+      1. props 必须要接收，传了没接收会 warn，没传的接收了是 undefined，但是没警告
+      2. emit 触发事件，组件绑定自定义事件，方法都要写到 setup 里面
+      3. 必须要在子组件写`emits:[]`，表示知道传过来了自定义事件
+9. vue3 一定要动手写，一听就会，一写就废！
+10. 忘记了的点
+    1. 给组件绑定的默认是自定义事件
+    2. 想要给组件绑定原生事件，需要.native，如`@click.native=""`
+11. vue3 计算属性
+    1. vue2 的 computed 可以用 setup 里面的数据，vue3 里面可以写 computed，特点就是要一直用 this
+    2. vue3 里面 computed 是一个函数，参数是一个函数，反正不用 this，普通箭头都可以
+    3. 计算属性的简写形式，是只读的
+    4. 完整版，需要 setter 和 getter，将对象传入 computed()
+12. vue3 的 watch
+    1. vue2 里面有简写形式（直接写成函数），和完整版形式（对象，有 immediate、deep 配置项，handler 函数）
+    2. **vue2 的 watch 从来没有用到过，watch 的使用场景？**
+13. **vue3 里面 reactive 和 reflect 的区别？都能实现响应式？**
+14.
