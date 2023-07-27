@@ -2003,13 +2003,14 @@ src/
    4. data、methods 在 vue3 中能用，向下兼容，vue2 配置的能读取 vue3 配置的，反之不行，2、3 冲突以 3 为主
 2. ref 函数
    1. 引入 ref，实现响应式，赋值的等式右边`ref(具体值)`，本质是一个 reference implement 实例对象，值存在 value 里面，有一个 proto 里面都有 getter 和 setter
-      - 模板里面自动取值，不需要.value，函数里面使用要 value
+      - 模板里面自动取值，不需要.value，函数里面使用要 .value
       - 如果不是简单数据类型（`Object.defineProperty`），如对象就要`obj.value.property`，内层的属性不需要 value 了，不是数据劫持方式，而是 Proxy，proxy 是 window 自带的，es6 中的新东西
+      - vue3里面实现响应式：基本数据类型是getter、setter，对象数据类型是proxy
    2. 内部基于 vue3 的新函数-reactive 函数
 3. reactive 函数
    1. 对象类型响应式数据，基本类型用 ref
    2. reactive 传入对象，生成直接就是 Proxy
-   3. 深度监视
+   3. 默认深度监视
       - 数组直接通过索引值改，响应式，vue2 可不行
    4. 直接最后所有的数据交给 reactive
       1. 但是最后都要 reactive 的哪个实例来点
@@ -2106,6 +2107,62 @@ src/
     4. 完整版，需要 setter 和 getter，将对象传入 computed()
 12. vue3 的 watch
     1. vue2 里面有简写形式（直接写成函数），和完整版形式（对象，有 immediate、deep 配置项，handler 函数）
-    2. **vue2 的 watch 从来没有用到过，watch 的使用场景？**
+    2. watch 是函数，第一个参数是监视的数据，第二个是一个回调函数，第三个参数是配置对象
+       1. 第二个参数回调函数有两个参数分别是 newValue 和 oldValue，在发生变化时调用这个函数
+       2. 第三个配置对象`{immediate:true}`，deep:true 在 vue 中有点小问题，监视对象类型的都要 deep
+       - reactive 强制开启深度监视，watch 的配置选项无法关闭深度监视
+       3. 第一个参数，如果是 ref 定义的 oldValue 正常，如果是 reactive 定义的 oldValue 会和 newValue 意义
+          - （简单属性）想监视对象里面的一个属性，需要写成函数的形式`()=>obj.propName`；想监视对象里面的多个属性，将上述多个函数写成数组的形式；不需要开启 deep
+          - 直接监视一个 ref 定义的字面量数据，不应该点 value；对象要点 value，点 value 只能监视对象第一层的简单数据类型，引用数据类型不能深度监视；或者直接不点 value，直接`deep:true`
+          - （引用属性）同上，需要开启 deep
+          - 如果尝试用 ref 创建对象，需要`对象.value`作为参数传入
+    3. watch 可以多次调用，但是没必要，将第一个参数以数组的形式传入，监视多个
 13. **vue3 里面 reactive 和 reflect 的区别？都能实现响应式？**
-14.
+14. vue3 有哪些坑？
+15. watchEffect 函数
+    1. 参数直接是一个回调函数，相当于默认 immediate，初始就会调用执行
+    2. 回调函数中使用了的默认就会监视到，用谁就会监视谁，只要这中间用到的数据发生了变化，就会重新执行回调函数
+    3. 有点类似于 computed，但 watchEffect 不需要返回值，注重过程
+16. **vue2 的 watch 从来没有用到过，watch 的使用场景？vue3 中 watchEffect 的使用场景**
+    1. vue2 的 watch 使用场景： 可以监听数据的变化，并根据需要执行异步操作、调用接口等。是一个配置项，watch 只能写一次。watchEffect 适用于需要在组件挂载或者响应式数据变化时自动执行副作用的情况，比如页面初始化、数据依赖的自动更新等。
+    2. （？）vue3 的 watchEffect 使用场景：由于 watchEffect 自动追踪依赖，通常用于处理副作用（Side Effect），比如在组件挂载时执行一些操作，就像 mounted 钩子一样（vue2 中一些发起网络请求、初始化数据、添加事件监听等操作，往往是在组件挂载后执行）。watchEffect 适用于需要在组件挂载或者响应式数据变化时自动执行副作用的情况，比如页面初始化、数据依赖的自动更新等。
+17. vue3 生命周期
+    1. ![Alt text](./images/image-22.png)
+    2. 最后一组名字改变了，beforeDestroy+destroyed 编程 beforeUnmount+unmounted
+    3. vue2 生命周期到 vue3 中的变化
+       1. **组件实例创建阶段：**
+       - Vue 2：`beforeCreate`, `created`, `beforeMount`, `mounted`, `beforeUpdate`, `updated`, `beforeDestroy`, `destroyed`
+       - Vue 3：`setup`
+       2. **组件实例更新阶段：**
+       - Vue 2：`beforeUpdate`, `updated`
+       - Vue 3：`setup` 内可以使用 `watch` 或 `watchEffect` 进行依赖追踪和响应式更新
+       3. **组件实例销毁阶段：**
+       - Vue 2：`beforeDestroy`, `destroyed`
+       - Vue 3：在 `setup` 内使用 `onBeforeUnmount` 和 `onUnmounted` 进行清理工作
+       4. **组件属性监听：**
+       - Vue 2：`watch`
+       - Vue 3：`watch` 和 `watchEffect` 都可以用于监听属性的变化，但在 `setup` 内的使用方式稍有不同
+       5. **全局钩子函数：**
+       - Vue 2：全局钩子函数 `beforeCreate`, `created`, `beforeMount`, `mounted`, `beforeUpdate`, `updated`, `beforeDestroy`, `destroyed`
+       - Vue 3：全局 API 发生了变化，使用 `createApp` 和 `component` 来注册全局组件和钩子函数，例如：
+         ```javascript
+         import { createApp } from "vue"
+         import App from "./App.vue"
+         const app = createApp(App)
+         app.mixin({
+           beforeCreate() {
+             // 全局 mixin 钩子
+           },
+         })
+         app.mount("#app")
+         ```
+    - 总的来说，Vue 3 采用了 Composition API，通过 `setup` 函数来替代 Vue 2 中的各个生命周期钩子，让代码更加灵活和组织更加清晰。同时，`watch` 和 `watchEffect` 的使用方式也发生了变化，更加方便和直观。在迁移 Vue 2 项目到 Vue 3 时，需要注意这些生命周期的变化，并对代码进行相应的调整。
+18. **组合式 api 到底什么概念**
+    1. 借用 hook 函数实现，用文件引入的格式，hooks/useXxx.js
+    2. 面向对象编程？
+19. **自定义 hook 函数**
+20. **mixin 是什么**
+21. toRef
+    1.  为了在模板中写的简单一点
+    2. 
+22. 一定要动手
